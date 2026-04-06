@@ -34,7 +34,7 @@ class AuthController {
         try {
             const { verify_email_token } = req.query;
             await authService.verifyEmail({ verify_email_token });
-            res.status(200).send(`<h1>Mail verificado exitadamente</h1>`);
+            res.status(200).json({ ok: true, status: 200, message: 'Email verificado exitosamente' });
         } catch (err) {
             if (err instanceof ServerError) {
                 res.status(err.status).json({

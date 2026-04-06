@@ -1,49 +1,66 @@
-/* 
-WorkspaceMemberRepository
-    - create (fk_id_user, fk_id_workspace, role)
-    - updateRole(id_member, role)
-    - delete(id_member)
-    - getMemberList(workspace_id) //Obtiene lista de miembros relacionados a ese espacio de trabajo
-*/
-
-
-import WorkspaceMember from "../models/workspaceMember.model.js"
+import ServerError from "../helpers/error.helper.js";
+import WorkspaceMember from "../models/workspaceMember.model.js";
+import "../models/workspace.model.js";
 
 class WorkspaceMemberRepository {
     async create(fk_id_workspace, fk_id_user, role) {
-        await WorkspaceMember.create({
+
+        if (!fk_id_workspace || !fk_id_user || !role) {
+            throw new ServerError('Faltan Credenciales', 400); // no em acuerdo el status de aca fck.
+        };
+
+        const workspace = await WorkspaceMember.create({
             fk_id_workspace: fk_id_workspace,
             fk_id_user: fk_id_user,
             role: role
-        })
-    }
+        });
+
+    };
 
     async deleteById(workspace_member_id) {
+        if (!workspace_member_id) {
+            throw new ServerError('Faltan Credenciales', 400);
+        };
         await WorkspaceMember.findByIdAndDelete(workspace_member_id)
-    }
+    };
 
     async getById(workspace_member_id) {
-        await WorkspaceMember.findById(workspace_member_id)
-    }
+        if (!workspace_member_id) {
+            throw new ServerError('Faltan Credenciales', 400);
+        };
+        const workspace = await WorkspaceMember.findById(workspace_member_id)
+        return workspace;
+    };
 
     async updateRoleById(member_id, role) {
+        if (!member_id || !role) {
+            throw new ServerError('Faltan Credenciales', 400);
+        };
         const new_workspace_member = await WorkspaceMember.findByIdAndUpdate(
             member_id,
             { role: role },
             { new: true }
-        )
-        return new_workspace_member
-    }
+        );
+        return new_workspace_member;
+    };
 
     async getAll() {
-        await WorkspaceMember.find()
-    }
+        const workspaces = await WorkspaceMember.find();
+        return workspaces;
+    };
 
     async getMemberList(fk_id_workspace) {
+        if (!fk_id_workspace) {
+            throw new ServerError('Faltan Credenciales', 400);
+        };
 
-        /* 
-        con el metodo populate podemos traer los datos relacionados a las referencias que tenemos en el modelo, en este caso fk_id_user y fk_id_workspace.
-        Entonces si quiero traer el nombre de usuario de cada miembro podria hacer un populate de fk_id_user y seleccionar solo el campo name, quedando asi:
+        /*
+        // Esta es una de las cosas que mas me cuestan, voy a dejar esto anotado para que no se me olvide.
+        
+        con el metodo populate podemos traer los datos relacionados a las referencias que tenemos en el modelo, 
+        en este caso fk_id_user y fk_id_workspace.
+        Entonces si quiero traer el nombre de usuario de cada miembro podria hacer un populate de fk_id_user y 
+        seleccionar solo el campo name, quedando asi:
         */
 
         const members = await WorkspaceMember.find({ fk_id_workspace: fk_id_workspace })
@@ -67,24 +84,29 @@ class WorkspaceMemberRepository {
                 }
             }
         )
-        console.log(members_mapped)
         return members_mapped
-    }
+    };
 
     async getWorkspaceListByUserId(user_id) {
-        const workspacelist = await WorkspaceMember.find({ fk_id_user: user_id }).populate('fk_id_workspace')
-        const members_mapped = workspacelist.map((member) => {
-            return {
-                member_id: member._id,
-                member_role: member.role,
-                workspace_id: member.fk_id_workspace._id,
-                workspace_title: member.fk_id_workspace.title,
-                workspace_description: member.fk_id_workspace.description
-            }
-        });
+        if (!user_id) {
+            throw new ServerError('Faltan Credenciales', 400);
+        };
 
-        return members_mapped;
+        const members = await WorkspaceMember.find({ fk_id_user: user_id }).populate('fk_id_workspace').lean();
+        // no puse un if > ServerError() aca porque el que este vacio no es un error como tal.
+
+        const validMembers = members.filter(
+            (member) => member.fk_id_workspace != null
+        );
+
+        const workspaces = validMembers.map((member) => ({
+            _id: member.fk_id_workspace._id,
+            name: member.fk_id_workspace.title,
+            member_id: member._id
+        }));
+
+        return workspaces;
     };
 };
-const workspaceMemberRepository = new WorkspaceMemberRepository()
-export default workspaceMemberRepository
+const workspaceMemberRepository = new WorkspaceMemberRepository();
+export default workspaceMemberRepository;

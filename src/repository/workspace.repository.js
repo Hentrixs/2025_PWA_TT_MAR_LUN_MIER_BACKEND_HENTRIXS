@@ -1,33 +1,45 @@
-/* 
-Crear la class WorkspaceRepository con los sig metodos:
-- create()
-- daleteById()
-- getById()
-- updateById()
-*/
 
+import ServerError from "../helpers/error.helper.js";
 import WorkspaceModel from "../models/workspace.model.js";
 class WorkspaceRepository {
+
     async create(title, description, url_image, active) {
+        if (!title) {
+            throw new ServerError('Faltan credenciales', 400);
+        };
         const user = await WorkspaceModel.create({
             title: title,
             description: description,
             url_image,
             active
-        })
-        console.log("Workspace created: ", user);
+        });
+        return user;
     };
+
     async deleteById(workspace_id) {
+        if (!workspace_id) {
+            throw new ServerError('Faltan credenciales', 400);
+        };
         await WorkspaceModel.findByIdAndDelete(workspace_id);
     };
+
     async getById(workspace_id) {
+        if (!workspace_id) {
+            throw new ServerError('Faltan credenciales', 400);
+        };
         return await WorkspaceModel.findById(workspace_id)
     };
+
     async updateById(workspace_id, new_workspace_props) {
+        if (!workspace_id || !new_workspace_props) {
+            throw new ServerError('Faltan credenciales', 400);
+        };
         const new_user = WorkspaceModel.findByIdAndUpdate(workspace_id, new_workspace_props, { new: true })
         return new_user;
     };
+
 }
+
 const workspaceRepository = new WorkspaceRepository()
 export default workspaceRepository;
 

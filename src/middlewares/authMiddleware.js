@@ -4,14 +4,6 @@ import ServerError from '../helpers/error.helper.js';
 
 const authMiddleware = (req, res, next) => {
     try {
-        /*
-    console.log('pasaste por authMiddleware')
-    if (Math.random() > 0.5) {
-        res.send('mala suerte'); // ejemplo de middleware de la suerte xd
-    } else {
-        next();
-    }
-    */
 
         const auth_header = req.headers.authorization // el token se envia en headers de authorization normalmente.
         const auth_token = auth_header.split(' ')[1]; // esto saca el Bearer y nos devuelve en token puro

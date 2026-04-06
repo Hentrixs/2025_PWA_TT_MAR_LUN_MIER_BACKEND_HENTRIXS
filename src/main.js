@@ -1,20 +1,16 @@
 import ENVIRONMENT from "./config/environment.config.js"
+import cors from 'cors';
 import connectMongoDB from "./config/mongoDB.config.js"
-import User from "./models/user.model.js"
-import Workspace from "./models/workspace.model.js"
-import WorkspaceMember from "./models/workspaceMember.model.js"
-import workspaceMemberRepository from "./repository/member.repository.js"
-import userRepository from "./repository/user.repository.js"
-import workspaceRepository from "./repository/workspace.repository.js"
+
 import express from 'express';
+
+import authMiddleware from "./middlewares/authMiddleware.js"
+
 import healthRouter from "./routes/health.router.js"
 import authRouter from "./routes/auth.router.js"
-import mailerTransporter from "./config/mailer.config.js"
-import cors from 'cors';
-import authMiddleware from "./middlewares/authMiddleware.js"
-import authController from "./controllers/auth.controller.js"
+import channelRouter from "./routes/channel.router.js";
 import workspaceRouter from "./routes/workspace.router.js"
-
+import channelMessagesRouter from "./routes/channelMessages.router.js";
 
 connectMongoDB()
 
@@ -31,6 +27,9 @@ Delegamos las consultas que vengan sobre '/api/health' al healthRouter
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/workspace', workspaceRouter);
+app.use('/api/channel', channelRouter);
+app.use('/api/channelMessages', channelMessagesRouter);
+
 // Ejemplo de implementacion de middleware en main.js
 // Notese qeu incluso podemos insertar otro middleware mas en el medio
 // esto se ejecuta en orden sincronico de izquierda a derecha.
@@ -64,22 +63,11 @@ app.get('/api/seed', async (req, res) => {
         await WorkspaceMember.create({ fk_id_workspace: workspace._id, fk_id_user: user._id, role: 'admin' });
         res.send("Seed listo!");
     } catch (e) { res.send(e.message); }
-})
+});
 
 app.listen(
     ENVIRONMENT.PORT,
     () => {
         console.log('La aplicacion se esta escuchando en el puerto ' + ENVIRONMENT.PORT)
     }
-)
-
-
-/* mailerTransporter.sendMail(
-    {
-        from: ENVIRONMENT.MAIL_USER,
-        to: ENVIRONMENT.MAIL_USER, //Aca va a donde quieren enviar
-        subject: 'Test de envio de email',
-        html: '<h1>Si recibis este email, el sistema de envio de emails funciona correctamente</h1>'
-    }
-)
- */
+);

@@ -43,11 +43,10 @@ class AuthService {
             html: `
             <h1>Verifica tu correo electronico</h1>
             <p>te has registrado correctamente, necesitamos verificar tu correo electronico.</p>
-            <a href="${ENVIRONMENT.URL_BACKEND}api/auth/verify-email?verify_email_token=${verifyEmailToken}">Click aqui para verificar tu correo</a>
+            <a href="${ENVIRONMENT.URL_FRONTEND}verify-email?verify_email_token=${verifyEmailToken}">Click aqui para verificar tu correo</a>
             <br>
             <span>Si no reconoces este registro desestima este mail.</span>
-            `,
-
+            `
         })
     };
 

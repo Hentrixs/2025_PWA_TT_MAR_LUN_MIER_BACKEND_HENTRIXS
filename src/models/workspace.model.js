@@ -1,13 +1,3 @@
-/* 
-Desarrollar el modelo de Workspace
--title
--description
--created_at
--active
--url_image
-
-Crear 2 espacios de trabajo de prueba
-*/
 
 import mongoose from "mongoose";
 
@@ -25,7 +15,7 @@ const workspaceSchema = new mongoose.Schema({
         default: Date.now,
     },
     active: {
-        type: Boolean,
+        type: Boolean, /* Aca no se porque le paso los parametros en string y que el repo los convierta a boolean y no en boolean directamente, despues mas tarde revisare esto, igual es terciario*/
         required: true,
         default: true,
     },

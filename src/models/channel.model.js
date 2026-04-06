@@ -4,7 +4,6 @@ Channel
 -name
 -descripcion
 -created_at
-
 */
 
 import mongoose from "mongoose";
