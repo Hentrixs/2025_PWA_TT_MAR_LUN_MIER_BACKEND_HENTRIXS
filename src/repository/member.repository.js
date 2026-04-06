@@ -87,12 +87,17 @@ class WorkspaceMemberRepository {
         return members_mapped
     };
 
+    async getByWorkspaceAndUserId(workspace_id, user_id) {
+        if (!workspace_id || !user_id) throw new ServerError('Faltan Credenciales', 400);
+        return await WorkspaceMember.findOne({ fk_id_workspace: workspace_id, fk_id_user: user_id });
+    };
+
     async getWorkspaceListByUserId(user_id) {
         if (!user_id) {
             throw new ServerError('Faltan Credenciales', 400);
         };
 
-        const members = await WorkspaceMember.find({ fk_id_user: user_id }).populate('fk_id_workspace').lean();
+        const members = await WorkspaceMember.find({ fk_id_user: user_id }).populate('fk_id_workspace');
         // no puse un if > ServerError() aca porque el que este vacio no es un error como tal.
 
         const validMembers = members.filter(

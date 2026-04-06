@@ -1,13 +1,13 @@
 import ServerError from "../helpers/error.helper.js";
 import workspaceMemberRepository from "../repository/member.repository.js";
 import workspaceRepository from "../repository/workspace.repository.js";
+import workspaceService from "../services/workspace.service.js";
 
 class workspaceController {
     async getWorkspaces(req, res) {
         try {
             const { user } = req;
-            const workspaces = await workspaceMemberRepository.getWorkspaceListByUserId(user.id);
-            console.log(workspaces);
+            const workspaces = await workspaceService.getWorkspaces(user.id);
 
             return res.status(200).json({
                 ok: true,
@@ -35,11 +35,10 @@ class workspaceController {
 
     async create(req, res) {
         try {
-            const { title, description } = req.body;
+            const { title, description, url_image } = req.body;
             const { user } = req;
 
-            const workspace = await workspaceRepository.create(title, description);
-            await workspaceMemberRepository.create(workspace._id, user.id, 'admin');
+            const workspace = await workspaceService.create(title, description, url_image, user.id);
 
             return res.status(201).json({
                 ok: true,
@@ -64,10 +63,10 @@ class workspaceController {
         };
     }
 
-    async deleteById(req, res) { // Parcialmente hecho
+    async deleteById(req, res) {
         try {
-            const { id } = req.body; // Aca tampoco recuerdo de donde sacaba esto , por ahora lo dejo asi.
-            await workspaceMemberRepository.deleteById(id);
+            const { id } = req.body;
+            await workspaceRepository.deleteById(id);
             return res.status(200).json({
                 ok: true,
                 status: 200,
@@ -90,15 +89,15 @@ class workspaceController {
         };
     }
 
-    async getById(req, res) { // Parcialmente hecho
+    async getById(req, res) {
         try {
-            const { id } = req.params; // lo mismo que los de arriba, no me acuerdo de donde se pasaba esto.
-            const workspace = await workspaceMemberRepository.getById(id);
-            return res.json(200).json({
+            const { id } = req.params;
+            const workspace = await workspaceRepository.getById(id);
+            return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'workspace creado correctamente',
-                data: { workspace } // me pregunto porque esto ira entre {}
+                message: 'Workspace obtenido correctamente',
+                data: { workspace }
             });
         } catch (err) {
             if (err instanceof ServerError) {
@@ -176,7 +175,8 @@ class workspaceController {
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'memberlist gotted'
+                message: 'memberlist gotted',
+                data: { memberlist }
             })
         } catch (err) {
             if (err instanceof ServerError) {

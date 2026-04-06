@@ -34,7 +34,7 @@ class WorkspaceRepository {
         if (!workspace_id || !new_workspace_props) {
             throw new ServerError('Faltan credenciales', 400);
         };
-        const new_user = WorkspaceModel.findByIdAndUpdate(workspace_id, new_workspace_props, { new: true })
+        const new_user = await WorkspaceModel.findByIdAndUpdate(workspace_id, new_workspace_props, { new: true })
         return new_user;
     };
 

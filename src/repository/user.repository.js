@@ -7,14 +7,14 @@ class UserRepository {
         if (!username || !email || !password) {
             throw new ServerError('Faltan credenciales', 400);
         };
-        await User.create({
+        return await User.create({
             name: username,
             email: email,
             password: password
         })
     }
 
-    async daleteById(user_id) {
+    async deleteById(user_id) {
         if (!user_id) {
             throw new ServerError('Faltan credenciales', 400);
         };

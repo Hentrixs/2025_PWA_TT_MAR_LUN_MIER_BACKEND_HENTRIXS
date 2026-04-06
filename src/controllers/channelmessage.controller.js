@@ -1,6 +1,5 @@
 import ChannelMessagesRepository from "../repository/channelMessages.repository.js";
-
-{/* TODO: Pedirle a la IA que atomatize los ServerError para los lugares necesarios */}
+import ServerError from "../helpers/error.helper.js";
 
 class channelMessagesController {
     async createChannelMessage(req,res) {

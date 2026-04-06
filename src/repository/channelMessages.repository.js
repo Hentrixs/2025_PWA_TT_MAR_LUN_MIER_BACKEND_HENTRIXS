@@ -17,5 +17,5 @@ class channelMessagesRepository {
     };
 };
 
-const ChannelMessagesRepository = new channelMessagesRepository;
+const ChannelMessagesRepository = new channelMessagesRepository();
 export default ChannelMessagesRepository;

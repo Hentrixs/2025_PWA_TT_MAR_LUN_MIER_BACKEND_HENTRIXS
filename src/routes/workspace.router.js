@@ -6,6 +6,6 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 const workspaceRouter = Router();
 
 workspaceRouter.get('/', authMiddleware, WorkspaceController.getWorkspaces);
-workspaceRouter.post('/create_workspace', authMiddleware, WorkspaceController.create);
+workspaceRouter.post('/', authMiddleware, WorkspaceController.create);
 
 export default workspaceRouter;

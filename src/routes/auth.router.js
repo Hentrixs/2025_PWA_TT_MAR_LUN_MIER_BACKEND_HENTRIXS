@@ -22,7 +22,7 @@ authRouter.post( // la url que envia el email esta mala despues arreglarla. de t
     authController.resetPasswordRequest
 );
 
-authRouter.post('/reset-password/:reset_token', authController.resetPassword); // perfecto, esto anda joya.
+authRouter.post('/reset-password/:reset_password_token', authController.resetPassword); // perfecto, esto anda joya.
 
 
 export default authRouter

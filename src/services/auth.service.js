@@ -113,10 +113,15 @@ class AuthService {
 
     async resetPasswordRequest({ email }) {
         if (!email) {
-            throw new ServerError('No se envio email', 404)
+            throw new ServerError('No se envio email', 400)
         };
 
-        const auth_token = jwt.sign({ email: email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: "10d" });
+        const user = await userRepository.getByEmail(email);
+        if (!user) {
+            throw new ServerError('No existe un usuario con ese email', 404);
+        };
+
+        const auth_token = jwt.sign({ email: email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: "1d" });
 
         if (!auth_token) {
             throw new ServerError('Error al general el JWT', 500)

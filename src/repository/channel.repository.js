@@ -6,7 +6,7 @@ class channelRepository {
         if (!fk_id_workspace || !name || !description) {
             throw new ServerError("Faltan datos obligatorios para crear el canal (workspace, name o description)", 400);
         }
-        await Channel.create({
+        return await Channel.create({
             fk_id_workspace: fk_id_workspace,
             name: name,
             description: description,

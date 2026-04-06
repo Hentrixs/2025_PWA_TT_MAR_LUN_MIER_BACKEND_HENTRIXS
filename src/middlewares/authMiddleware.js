@@ -5,7 +5,10 @@ import ServerError from '../helpers/error.helper.js';
 const authMiddleware = (req, res, next) => {
     try {
 
-        const auth_header = req.headers.authorization // el token se envia en headers de authorization normalmente.
+        const auth_header = req.headers.authorization; // el token se envia en headers de authorization normalmente.
+        if (!auth_header) {
+            throw new ServerError('Token invalido', 401);
+        }
         const auth_token = auth_header.split(' ')[1]; // esto saca el Bearer y nos devuelve en token puro
         if (!auth_token) {
             throw new ServerError('Token invalido', 401);
@@ -28,9 +31,9 @@ const authMiddleware = (req, res, next) => {
                 message: err.message
             });
         } else if (err instanceof jwt.JsonWebTokenError) {
-            res.status(err.status).json({
+            res.status(401).json({
                 ok: false,
-                code: 401,
+                status: 401,
                 message: 'Token invalido'
             })
         } else {

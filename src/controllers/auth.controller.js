@@ -109,9 +109,9 @@ class AuthController {
 
     async resetPassword(req, res) {
         try {
-            const { reset_token } = req.params;
+            const { reset_password_token } = req.params;
             const { new_password } = req.body;
-            await authService.resetPassword({ reset_token, new_password });
+            await authService.resetPassword({ reset_token: reset_password_token, new_password });
             return res.status(201).json({
                 ok: true,
                 status: 201,
