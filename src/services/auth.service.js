@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt';
 class AuthService {
     async register({ name, email, password }) {
         if (!name || !email || !password) {
-            throw new ServerError('El nombre, email y passowrd son obligatorios', 404);
+            throw new ServerError('El nombre, email y passowrd son obligatorios', 400);
             // porque aca segun tu es 400 y no 404 o 401
         };
 
@@ -90,6 +90,9 @@ class AuthService {
         if (!user) {
             throw new ServerError('Usuario no encontrado', 404);
         }
+        if (!user.email_verified) {
+            throw new ServerError('Debes verificar tu email antes de iniciar sesión', 401);
+        }
         const is_same_password = await bcrypt.compare(password, user.password); // menos mal que me avisaste porque se me olvido esto
 
 
@@ -122,10 +125,6 @@ class AuthService {
         };
 
         const auth_token = jwt.sign({ email: email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: "1d" });
-
-        if (!auth_token) {
-            throw new ServerError('Error al general el JWT', 500)
-        };
 
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,

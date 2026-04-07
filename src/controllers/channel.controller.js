@@ -1,4 +1,3 @@
-import express from 'express';
 import ChannelRepository from '../repository/channel.repository.js';
 import ServerError from '../helpers/error.helper.js';
 

@@ -5,6 +5,9 @@ import connectMongoDB from "./config/mongoDB.config.js"
 import express from 'express';
 
 import authMiddleware from "./middlewares/authMiddleware.js"
+import User from "./models/user.model.js";
+import Workspace from "./models/workspace.model.js";
+import WorkspaceMember from "./models/workspaceMember.model.js";
 
 import healthRouter from "./routes/health.router.js"
 import authRouter from "./routes/auth.router.js"

@@ -85,9 +85,9 @@ class AuthController {
         try {
             const { email } = req.body;
             await authService.resetPasswordRequest({ email });
-            res.status(201).json({
+            res.status(200).json({
                 ok: true,
-                status: 201,
+                status: 200,
                 message: 'Solicitud de Reset de Password enviada'
             });
         } catch (err) {
@@ -112,9 +112,9 @@ class AuthController {
             const { reset_password_token } = req.params;
             const { new_password } = req.body;
             await authService.resetPassword({ reset_token: reset_password_token, new_password });
-            return res.status(201).json({
+            return res.status(200).json({
                 ok: true,
-                status: 201,
+                status: 200,
                 message: "Password reseted"
             });
         } catch (err) {
