@@ -1,9 +1,12 @@
 import { Router } from 'express';
-import authMiddleware from '../middlewares/authMiddleware.js';
 import ChannelController from '../controllers/channel.controller.js';
+import verifyMemberWorkspaceRoleMiddleware from "../middlewares/verifyMemberWorkspaceMiddleware.js";
 
-const channelRouter = Router();
+const channelRouter = Router({ mergeParams: true });
 
-channelRouter.post('/', authMiddleware, ChannelController.createChannel);
-channelRouter.get('/', authMiddleware, ChannelController.getChannelByWorkspaceId);
+// este channelRouter esta encastrado al workspace router el cual ya tiene el authMiddleware, no hace falta meterlo aca.
+
+channelRouter.post('/', verifyMemberWorkspaceRoleMiddleware(["owner", "admin"]), ChannelController.createChannel);
+channelRouter.get('/', ChannelController.getChannelByWorkspaceId);
+channelRouter.delete('/:channel_id', ChannelController.deleteChannelById)
 export default channelRouter;

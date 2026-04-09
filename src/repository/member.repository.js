@@ -112,6 +112,11 @@ class WorkspaceMemberRepository {
 
         return workspaces;
     };
+
+    async isMemberPartOfWorkspaceById(user_id,workspace_id) {
+        if (!user_id || !workspace_id) throw new ServerError('Faltan Credenciales', 400);
+        return await WorkspaceMember.findOne({fk_id_user: user_id, fk_id_workspace: workspace_id});
+    };
 };
 const workspaceMemberRepository = new WorkspaceMemberRepository();
 export default workspaceMemberRepository;

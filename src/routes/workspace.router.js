@@ -2,11 +2,21 @@
 import { Router } from "express";
 import WorkspaceController from "../controllers/workspace.controller.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
-import verifyMemberWorkspaceMiddleware from "../middlewares/verifyMemberWorkspaceMiddleware.js";
+import verifyMemberWorkspaceRoleMiddleware from "../middlewares/verifyMemberWorkspaceMiddleware.js";
+import channelRouter from "./channel.router.js";
+
 const workspaceRouter = Router();
 
-workspaceRouter.get('/', authMiddleware, WorkspaceController.getWorkspaces);
-workspaceRouter.post('/', authMiddleware, WorkspaceController.create);
-workspaceRouter.get('/:workspace_id', authMiddleware, verifyMemberWorkspaceMiddleware, WorkspaceController.getWorkspaceDetail);
+workspaceRouter.use(authMiddleware);
+
+workspaceRouter.get('/', WorkspaceController.getWorkspaces);
+workspaceRouter.post('/', WorkspaceController.create);
+
+workspaceRouter.get('/:workspace_id',
+    verifyMemberWorkspaceRoleMiddleware([]),
+    WorkspaceController.getWorkspaceDetail
+);
+
+workspaceRouter.use('/:workspace_id/channel', verifyMemberWorkspaceRoleMiddleware([]), channelRouter);
 
 export default workspaceRouter;

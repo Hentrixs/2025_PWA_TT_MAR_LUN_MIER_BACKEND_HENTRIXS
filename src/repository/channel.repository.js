@@ -20,9 +20,14 @@ class channelRepository {
     };
 
     async getChannelByWorkspaceId(fk_id_workspace) {
-        const channel_list = await Channel.find({fk_id_workspace: fk_id_workspace});
+        const channel_list = await Channel.find({ fk_id_workspace: fk_id_workspace });
         return channel_list;
     };
+
+    async deleteChannelById(channel_id) {
+        return await Channel.findByIdAndDelete(channel_id);
+    };
+
 };
 
 const ChannelRepository = new channelRepository();

@@ -1,19 +1,23 @@
 
 import ServerError from "../helpers/error.helper.js";
 import WorkspaceModel from "../models/workspace.model.js";
+import ChannelRepository from "./channel.repository.js";
 class WorkspaceRepository {
 
     async create(title, description, url_image, active) {
         if (!title) {
             throw new ServerError('Faltan credenciales', 400);
         };
-        const user = await WorkspaceModel.create({
+        const workspace = await WorkspaceModel.create({
             title: title,
             description: description,
             url_image,
             active
         });
-        return user;
+
+        await ChannelRepository.create(workspace._id, 'General', '');
+
+        return workspace;
     };
 
     async deleteById(workspace_id) {
