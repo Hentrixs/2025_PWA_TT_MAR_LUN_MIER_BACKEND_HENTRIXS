@@ -4,6 +4,7 @@ import WorkspaceController from "../controllers/workspace.controller.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import verifyMemberWorkspaceRoleMiddleware from "../middlewares/verifyMemberWorkspaceMiddleware.js";
 import channelRouter from "./channel.router.js";
+import workspaceMemberRouter from "./workspaceMember.router.js";
 
 const workspaceRouter = Router();
 
@@ -18,5 +19,7 @@ workspaceRouter.get('/:workspace_id',
 );
 
 workspaceRouter.use('/:workspace_id/channel', verifyMemberWorkspaceRoleMiddleware([]), channelRouter);
+
+workspaceRouter.use('/:workspace_id/member', workspaceMemberRouter);
 
 export default workspaceRouter;

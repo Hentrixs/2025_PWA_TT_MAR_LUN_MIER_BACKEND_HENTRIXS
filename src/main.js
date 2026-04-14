@@ -31,7 +31,6 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/channel', channelRouter);
-app.use('/api/channelMessages', channelMessagesRouter);
 
 // Ejemplo de implementacion de middleware en main.js
 // Notese qeu incluso podemos insertar otro middleware mas en el medio

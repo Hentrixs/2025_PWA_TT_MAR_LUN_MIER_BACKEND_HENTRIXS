@@ -1,5 +1,7 @@
 
 import mongoose from "mongoose";
+import AVAILABLE_MEMBER_ROLES from "../constants/roles.constant";
+import ACCEPT_INVITATION_CONSTANTS from "../constants/acceptinvitation.constant";
 
 const workspaceMemberSchema = new mongoose.Schema({
     fk_id_user: {
@@ -15,16 +17,25 @@ const workspaceMemberSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: [
-            'owner',
-            'admin',
-            'user'
+            AVAILABLE_MEMBER_ROLES.OWNER,
+            AVAILABLE_MEMBER_ROLES.ADMIN,
+            AVAILABLE_MEMBER_ROLES.USER
         ],
-        default: "user"
+        default: AVAILABLE_MEMBER_ROLES.USER
     },
     created_at: {
         type: Date,
         default: Date.now,
         required: true
+    },
+    acceptInvitation: {
+        type: String,
+        enum: [
+            ACCEPT_INVITATION_CONSTANTS.ACCEPTED,
+            ACCEPT_INVITATION_CONSTANTS.PENDING,
+            ACCEPT_INVITATION_CONSTANTS.REJECTED
+        ],
+        default: ACCEPT_INVITATION_CONSTANTS.PENDING
     }
 })
 

@@ -1,6 +1,8 @@
 import ServerError from "../helpers/error.helper.js";
 import WorkspaceMember from "../models/workspaceMember.model.js";
 import "../models/workspace.model.js";
+import ACCEPT_INVITATION_CONSTANTS from "../constants/acceptinvitation.constant.js";
+
 
 class WorkspaceMemberRepository {
     async create(fk_id_workspace, fk_id_user, role) {
@@ -113,9 +115,21 @@ class WorkspaceMemberRepository {
         return workspaces;
     };
 
-    async isMemberPartOfWorkspaceById(user_id,workspace_id) {
+    async isMemberPartOfWorkspaceById(user_id, workspace_id) {
         if (!user_id || !workspace_id) throw new ServerError('Faltan Credenciales', 400);
-        return await WorkspaceMember.findOne({fk_id_user: user_id, fk_id_workspace: workspace_id});
+        return await WorkspaceMember.findOne({ fk_id_user: user_id, fk_id_workspace: workspace_id });
+    };
+
+    async updateInvitationStatus(member_id, status) {
+        if (!member_id || !status) {
+            throw new ServerError('Faltan datos para actualizar el estado', 400);
+        };
+        const updatedMember = await WorkspaceMember.findByIdAndUpdate(
+            member_id,
+            { acceptInvitation: status },
+            { new: true }
+        );
+        return updatedMember;
     };
 };
 const workspaceMemberRepository = new WorkspaceMemberRepository();

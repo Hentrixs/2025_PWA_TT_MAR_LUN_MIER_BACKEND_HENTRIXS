@@ -28,6 +28,9 @@ class channelRepository {
         return await Channel.findByIdAndDelete(channel_id);
     };
 
+    async getById(channel_id) {
+        return await Channel.findById(channel_id);
+    };
 };
 
 const ChannelRepository = new channelRepository();
