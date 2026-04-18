@@ -2,6 +2,8 @@ import ServerError from "../helpers/error.helper.js";
 import workspaceMemberRepository from "../repository/member.repository.js";
 import workspaceRepository from "../repository/workspace.repository.js";
 import workspaceService from "../services/workspace.service.js";
+import ChannelRepository from "../repository/channel.repository.js";
+import ChannelMessagesRepository from "../repository/channelMessages.repository.js";
 
 class workspaceController {
     async getWorkspaces(req, res) {
@@ -12,7 +14,7 @@ class workspaceController {
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Exito',
+                message: 'Operación exitosa.',
                 data: { workspaces }
             });
         } catch (err) {
@@ -26,7 +28,7 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado. Inténtalo de nuevo más tarde.'
                 });
                 console.log(err);
             }
@@ -57,7 +59,7 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             }
         };
@@ -66,6 +68,20 @@ class workspaceController {
     async deleteById(req, res) {
         try {
             const { id } = req.body;
+
+            // CASCADA: 1. Obtener todos los canales del workspace y borrar sus mensajes
+            const channels = await ChannelRepository.getChannelByWorkspaceId(id);
+            for (const channel of channels) {
+                await ChannelMessagesRepository.deleteMessagesByChannelId(channel._id);
+            }
+
+            // 2. Borrar todos los canales físicos
+            await ChannelRepository.deleteChannelsByWorkspaceId(id);
+
+            // 3. Borrar todas las membresías vinculadas al espacio
+            await workspaceMemberRepository.deleteMembersByWorkspaceId(id);
+
+            // 4. Finalmente, borrar el Workspace padre
             await workspaceRepository.deleteById(id);
             return res.status(200).json({
                 ok: true,
@@ -83,7 +99,7 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             }
         };
@@ -110,7 +126,7 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             }
         };
@@ -123,7 +139,7 @@ class workspaceController {
             return res.status(201).json({
                 ok: true,
                 status: 201,
-                message: 'role updated'
+                message: 'Rol actualizado correctamente.'
             })
         } catch (err) {
             if (err instanceof ServerError) {
@@ -136,7 +152,7 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             }
         };
@@ -148,7 +164,7 @@ class workspaceController {
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'workspaces list getted',
+                message: 'Lista de espacios de trabajo obtenida.',
                 data: { workspaces }
             })
         } catch (err) {
@@ -162,7 +178,7 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             }
         };
@@ -175,7 +191,7 @@ class workspaceController {
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'memberlist gotted',
+                message: 'Lista de miembros obtenida.',
                 data: { memberlist }
             })
         } catch (err) {
@@ -189,13 +205,13 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             }
         };
     }
 
-    async getWorkspaceDetail(req,res) {
+    async getWorkspaceDetail(req, res) {
         try {
             const { workspace_id } = req.params;
             const workspace = await workspaceRepository.getById(workspace_id);
@@ -204,9 +220,9 @@ class workspaceController {
                 ok: true,
                 status: 200,
                 message: 'Datos del espacio de trabajo obtenidos',
-                data: { workspace, members}
+                data: { workspace, members }
             })
-        } catch(err) {
+        } catch (err) {
             if (err instanceof ServerError) {
                 res.status(err.status).json({
                     ok: false,
@@ -217,11 +233,39 @@ class workspaceController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             }
         }
     }
+
+    async updateById(req, res) {
+        try {
+            const { workspace_id } = req.params;
+            const { title, description, url_image } = req.body;
+            const updated_workspace = await workspaceRepository.updateById(workspace_id, title, description, url_image);
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Workspace actualizado correctamente.',
+                data: { workspace: updated_workspace }
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                res.status(err.status).json({
+                    ok: false,
+                    status: err.status,
+                    message: err.message
+                });
+            } else {
+                res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Ha ocurrido un error inesperado.'
+                });
+            }
+        };
+    };
 };
 
 const WorkspaceController = new workspaceController();

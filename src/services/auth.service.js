@@ -4,23 +4,24 @@ import mailerTransporter from "../config/mailer.config.js";
 import ServerError from "../helpers/error.helper.js";
 import userRepository from "../repository/user.repository.js";
 import bcrypt from 'bcrypt';
+import workspaceMemberRepository from '../repository/member.repository.js';
 
 
 class AuthService {
     async register({ name, email, password }) {
         if (!name || !email || !password) {
-            throw new ServerError('El nombre, email y passowrd son obligatorios', 400);
+            throw new ServerError('Todos los campos son obligatorios: nombre, email y contraseña.', 400);
             // porque aca segun tu es 400 y no 404 o 401
         };
 
         const userByEmail = await userRepository.getByEmail(email);
         if (userByEmail) {
-            throw new ServerError('Email del usuario ya existente', 400);
+            throw new ServerError('Este correo electrónico ya se encuentra registrado.', 400);
         };
 
         const userByName = await userRepository.getByUsername(name);
         if (userByName) {
-            throw new ServerError('Nombre de usuario ya existente', 400);
+            throw new ServerError('El nombre de usuario elegido ya está en uso.', 400);
         };
 
         const hashedPassword = await bcrypt.hash(password, 12); // encripacion del password. porque 12 es el recomendado? yo pensaba que era 10.
@@ -41,8 +42,8 @@ class AuthService {
             to: email,
             subject: `Bienvenido ${name}, verifica tu correo electronico`, // que era subject?
             html: `
-            <h1>Verifica tu correo electronico</h1>
-            <p>te has registrado correctamente, necesitamos verificar tu correo electronico.</p>
+            <h1>Verifica tu correo electrónico</h1>
+            <p>Tu cuenta ha sido creada con éxito. Para comenzar a usar Slack Clone, por favor verifica tu dirección de correo electrónico haciendo clic en el siguiente enlace:</p>
             <a href="${ENVIRONMENT.URL_FRONTEND}verify-email?verify_email_token=${verifyEmailToken}">Click aqui para verificar tu correo</a>
             <br>
             <span>Si no reconoces este registro desestima este mail.</span>
@@ -52,21 +53,21 @@ class AuthService {
 
     async verifyEmail({ verify_email_token }) {
         if (!verify_email_token) {
-            throw new ServerError('No se encuentra token de verificacion', 400);
+            throw new ServerError('Token de verificación no encontrado.', 400);
         };
         try {
             // Esto checkea el token usando la misma clave pero desencriptada no?
             const { email, name } = jwt.verify(verify_email_token, ENVIRONMENT.JWT_SECRET_KEY);
             const user = await userRepository.getByEmail(email);
             if (!user) {
-                throw new ServerError('El usuario ya no existe', 404);
+                throw new ServerError('El usuario no pudo ser localizado.', 404);
             } else if (user.email_verified) {
-                throw new ServerError('Usuario con email ya validado', 400);
+                throw new ServerError('Esta cuenta ya ha sido verificada previamente.', 400);
             } else {
                 const user_updated = await userRepository.updateById(user._id, { email_verified: true });
 
                 if (!user_updated.email_verified) {
-                    throw new ServerError('El usuario no se pudo actualizar en la base de datos', 500);
+                    throw new ServerError('Error al actualizar el estado de verificación. Inténtalo de nuevo.', 500);
                 } else {
                     return user_updated // que pasa aca? y esto se retornaba?
                 }
@@ -76,9 +77,9 @@ class AuthService {
             if (err instanceof jwt.TokenExpiredError) {
                 const { email, name } = jwt.decode(verify_email_token); // Esto saca el payload del token.
                 await this.sendVerifyEmail({ email, name });
-                throw new ServerError('El token de verificación expiró. Te hemos enviado un correo nuevo.', 401)
+                throw new ServerError('El enlace de verificación ha expirado. Te hemos enviado uno nuevo a tu correo.', 401)
             } else if (err instanceof jwt.JsonWebTokenError) {
-                throw new ServerError('Token invalido o corrupto', 401);
+                throw new ServerError('El enlace de verificación es inválido o está dañado.', 401);
             } else {
                 throw err;
             };
@@ -88,16 +89,16 @@ class AuthService {
     async login({ email, password }) {
         const user = await userRepository.getByEmail(email);
         if (!user) {
-            throw new ServerError('Usuario no encontrado', 404);
+            throw new ServerError('Credenciales inválidas. Verifica tu correo y contraseña.', 401);
         }
         if (!user.email_verified) {
-            throw new ServerError('Debes verificar tu email antes de iniciar sesión', 401);
+            throw new ServerError('Tu cuenta aún no ha sido verificada. Revisa tu bandeja de entrada.', 401);
         }
         const is_same_password = await bcrypt.compare(password, user.password); // menos mal que me avisaste porque se me olvido esto
 
 
         if (!is_same_password) {
-            throw new ServerError('Contraseña incorrecta', 401);
+            throw new ServerError('Credenciales inválidas. Verifica tu correo y contraseña.', 401);
         }
 
         // NUNCA guardamos el password en el token! Y agregamos id, name y created_at
@@ -121,7 +122,7 @@ class AuthService {
 
         const user = await userRepository.getByEmail(email);
         if (!user) {
-            throw new ServerError('No existe un usuario con ese email', 404);
+            throw new ServerError('Si el correo existe, recibirás un enlace para restablecer tu contraseña.', 404);
         };
 
         const auth_token = jwt.sign({ email: email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: "1d" });
@@ -140,7 +141,7 @@ class AuthService {
 
     async resetPassword({ reset_token, new_password }) {
         if (!reset_token || !new_password) {
-            throw new ServerError('Falta el token o la nueva contraseña', 400);
+            throw new ServerError('Datos incompletos para el restablecimiento de contraseña.', 400);
         }
         try {
             // jwt.verify abre el token y se asegura de que haya sido firmado con TU LLAVE SECRETA, no con la nueva contraseña!
@@ -156,14 +157,25 @@ class AuthService {
 
         } catch (err) {
             if (err instanceof jwt.TokenExpiredError) {
-                throw new ServerError('Token exipirado, vuelve a solicitarlo', 401); // esto veamoslo al final, pero no era que habia un mecanismo en verifyemail para reenviar el token o algo asi?
+                throw new ServerError('El enlace ha expirado. Por favor, solicita uno nuevo.', 401); // esto veamoslo al final, pero no era que habia un mecanismo en verifyemail para reenviar el token o algo asi?
             } else if (err instanceof jwt.JsonWebTokenError) {
-                throw new ServerError('Link de reconocimiento es invalido o esta corrupto', 401);
+                throw new ServerError('El enlace es inválido o se encuentra dañado.', 401);
             } else {
                 throw err;
             }
         };
 
+    };
+
+    async deleteAccount({ user_id, password }) {
+        const user = await userRepository.getById(user_id);
+        if (!user) throw new ServerError('Usuario no encontrado.', 404);
+
+        const is_same_password = await bcrypt.compare(password, user.password);
+        if (!is_same_password) throw new ServerError('Contraseña incorrecta.', 401);
+
+        await workspaceMemberRepository.deleteMembersByUserId(user_id);
+        await userRepository.deleteById(user_id);
     };
 };
 

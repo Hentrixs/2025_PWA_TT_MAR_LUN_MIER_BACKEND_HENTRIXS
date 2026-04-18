@@ -22,4 +22,10 @@ workspaceRouter.use('/:workspace_id/channel', verifyMemberWorkspaceRoleMiddlewar
 
 workspaceRouter.use('/:workspace_id/member', workspaceMemberRouter);
 
+workspaceRouter.patch('/:workspace_id',
+    verifyMemberWorkspaceRoleMiddleware(['owner', 'admin']),
+    WorkspaceController.updateById
+);
+
+
 export default workspaceRouter;

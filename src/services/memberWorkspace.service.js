@@ -3,6 +3,7 @@ import userRepository from "../repository/user.repository.js";
 import ServerError from "../helpers/error.helper.js";
 import jwt from 'jsonwebtoken';
 import ENVIRONMENT from "../config/environment.config.js";
+import mailerTransporter from "../config/mailer.config.js";
 
 class MemberWorkspaceService {
     async getWorkspaces(user_id) {
@@ -10,12 +11,12 @@ class MemberWorkspaceService {
         return workspaces;
     };
 
-    async create(user_id, workspace_id, role) {
+    async create(user_id, workspace_id, role, status = 'pending') {
         const existing = await workspaceMemberRepository.getByWorkspaceAndUserId(workspace_id, user_id);
         if (existing) {
             throw new ServerError('El usuario ya es miembro de este workspace', 400);
         };
-        await workspaceMemberRepository.create(workspace_id, user_id, role);
+        await workspaceMemberRepository.create(workspace_id, user_id, role, status);
     };
 
     async getMemberList(workspace_id) {
@@ -38,13 +39,13 @@ class MemberWorkspaceService {
         const invitedUser = await userRepository.getByEmail(invited_email);
 
         if (!invitedUser) {
-            throw new ServerError('El usuario invitado no existe', 404);
+            throw new ServerError('No se pudo encontrar un usuario registrado con ese correo electrónico.', 404);
         }
 
         const existingMember = await workspaceMemberRepository.getByWorkspaceAndUserId(workspace_id, invitedUser._id);
         if (existingMember) {
-            if (existingMember.acceptInvitation === 'pending') throw new ServerError('Ya hay una invitación pendiente para este usuario', 400);
-            throw new ServerError('El usuario ya es miembro de este espacio de trabajo', 400);
+            if (existingMember.acceptInvitation === 'pending') throw new ServerError('Ya existe una invitación pendiente para esta cuenta.', 400);
+            throw new ServerError('Esta cuenta ya forma parte del espacio de trabajo.', 400);
         }
 
         // Creamos al miembro en estado 'pending' (por default)
@@ -64,15 +65,20 @@ class MemberWorkspaceService {
         );
 
         // 2. Armamos los links mágicos. 
-        const accept_link = `${ENVIRONMENT.URL_BACKEND}/api/workspace/${workspace_id}/member/?token=${accept_token}`;
-        const reject_link = `${ENVIRONMENT.URL_BACKEND}/api/workspace/${workspace_id}/member/?token=${reject_token}`;
+        const accept_link = `${ENVIRONMENT.URL_FRONTEND}invite/respond?token=${accept_token}&workspace_id=${workspace_id}`;
+        const reject_link = `${ENVIRONMENT.URL_FRONTEND}invite/respond?token=${reject_token}&workspace_id=${workspace_id}`;
 
         // 3. (OPCIONAL POR AHORA) Mandamos el correo. Como todavía no configuramos Nodemailer, lo comentamos e imprimimos por consola.
-        console.log("=== EMAIL DE INVITACIÓN SIMULADO ===");
-        console.log(`Para: ${invited_email}`);
-        console.log(`Link para ACEPTAR: ${accept_link}`);
-        console.log(`Link para RECHAZAR: ${reject_link}`);
-        console.log("=====================================");
+        await mailerTransporter.sendMail({
+            from: ENVIRONMENT.MAIL_USER,
+            to: invited_email,
+            subject: `${invitedUser.name}, has recibido una invitación a GreenSlack`,
+            html: `
+                <h1>Te han invitado a un espacio de trabajo en GreenSlack</h1>
+                <p>Elige qué hacer con tu invitación:</p>
+                <a href="${accept_link}">Aceptar</a> &nbsp; <a href="${reject_link}">Rechazar</a>
+            `
+        });
 
         return newMember;
     };
@@ -87,13 +93,13 @@ class MemberWorkspaceService {
 
             // 2. Buscamos al usuario real 
             const user = await userRepository.getByEmail(email);
-            if (!user) throw new ServerError('Usuario no encontrado', 404);
+            if (!user) throw new ServerError('Cuenta no localizada.', 404);
 
             // 3. Buscamos la membresia
             const membership = await workspaceMemberRepository.getByWorkspaceAndUserId(workspace_id, user._id);
             if (!membership) throw new ServerError('Invitación no encontrada', 404);
 
-            if (membership.acceptInvitation !== 'pending') throw new ServerError('Ya has respondido a esta invitación', 400);
+            if (membership.acceptInvitation !== 'pending') throw new ServerError('Esta invitación ya ha sido procesada.', 400);
 
             // 4. Actualizamos y le mandamos el 'action' (que va a decir 'accepted' o 'rejected' dependiendo qué botón tocó)
             const updatedMembership = await workspaceMemberRepository.updateInvitationStatus(membership._id, action);

@@ -31,6 +31,23 @@ class channelRepository {
     async getById(channel_id) {
         return await Channel.findById(channel_id);
     };
+
+    async deleteChannelsByWorkspaceId(workspace_id) {
+        return await Channel.deleteMany({ fk_id_workspace: workspace_id });
+    };
+
+    async updateChannelById(channel_id, name, description) {
+        const update = {};
+        if (name !== undefined) update.name = name;
+        if (description !== undefined) update.description = description;
+        const updated_channel = await Channel.findByIdAndUpdate(
+            channel_id,
+            update,
+            { new: true }
+        );
+        if (!updated_channel) throw new ServerError('Canal no encontrado', 404);
+        return updated_channel;
+    };
 };
 
 const ChannelRepository = new channelRepository();

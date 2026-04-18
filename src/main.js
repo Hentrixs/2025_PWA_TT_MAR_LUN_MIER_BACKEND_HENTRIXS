@@ -17,15 +17,11 @@ import channelMessagesRouter from "./routes/channelMessages.router.js";
 
 connectMongoDB()
 
-
 const app = express()
 
 app.use(cors());
 app.use(express.json())
 
-/* 
-Delegamos las consultas que vengan sobre '/api/health' al healthRouter
-*/
 
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);

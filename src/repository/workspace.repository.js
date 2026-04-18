@@ -14,8 +14,7 @@ class WorkspaceRepository {
             url_image,
             active
         });
-
-        await ChannelRepository.create(workspace._id, 'General', '');
+        await ChannelRepository.create(workspace._id, 'General', 'Canal general del espacio de trabajo');
 
         return workspace;
     };
@@ -34,12 +33,23 @@ class WorkspaceRepository {
         return await WorkspaceModel.findById(workspace_id)
     };
 
-    async updateById(workspace_id, new_workspace_props) {
-        if (!workspace_id || !new_workspace_props) {
+    async updateById(workspace_id, title, description, url_image) {
+        if (!workspace_id) {
             throw new ServerError('Faltan credenciales', 400);
         };
-        const new_user = await WorkspaceModel.findByIdAndUpdate(workspace_id, new_workspace_props, { new: true })
-        return new_user;
+
+        const updates = {};
+        if (title !== undefined) updates.title = title;
+        if (description !== undefined) updates.description = description;
+        if (url_image !== undefined) updates.url_image = url_image;
+
+        const updated_workspace = await WorkspaceModel.findByIdAndUpdate(
+            workspace_id,
+            updates,
+            { new: true }
+        );
+        if (!updated_workspace) throw new ServerError('Workspace no encontrado', 404);
+        return updated_workspace;
     };
 
 }

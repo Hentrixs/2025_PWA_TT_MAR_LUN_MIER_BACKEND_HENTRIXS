@@ -1,5 +1,4 @@
 import ServerError from "../helpers/error.helper.js";
-import userRepository from "../repository/user.repository.js";
 import authService from "../services/auth.service.js";
 
 class AuthController {
@@ -11,7 +10,7 @@ class AuthController {
             return res.status(201).json({
                 ok: true,
                 status: 201,
-                message: 'El usuario se ha creado correctamente'
+                message: 'Usuario registrado con éxito. Por favor, verifica tu correo electrónico.'
             })
         } catch (err) {
             if (err instanceof ServerError) {
@@ -24,7 +23,7 @@ class AuthController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado en el servidor. Inténtalo de nuevo más tarde.'
                 });
             };
         };
@@ -34,7 +33,7 @@ class AuthController {
         try {
             const { verify_email_token } = req.query;
             await authService.verifyEmail({ verify_email_token });
-            res.status(200).json({ ok: true, status: 200, message: 'Email verificado exitosamente' });
+            res.status(200).json({ ok: true, status: 200, message: '¡Cuenta verificada! Ya puedes iniciar sesión.' });
         } catch (err) {
             if (err instanceof ServerError) {
                 res.status(err.status).json({
@@ -46,7 +45,7 @@ class AuthController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado en el servidor.'
                 });
             };
         }
@@ -57,7 +56,7 @@ class AuthController {
             const { email, password } = req.body;
             const auth_token = await authService.login({ email, password });
             return res.status(200).json({
-                message: 'Login successfull',
+                message: 'Sesión iniciada correctamente.',
                 status: 200,
                 ok: true,
                 data: {
@@ -75,7 +74,7 @@ class AuthController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error.'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             };
         };
@@ -88,7 +87,7 @@ class AuthController {
             res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Solicitud de Reset de Password enviada'
+                message: 'Si el correo existe, recibirás un enlace para restablecer tu contraseña en unos minutos.'
             });
         } catch (err) {
             if (err instanceof ServerError) {
@@ -101,7 +100,7 @@ class AuthController {
                 res.status(500).json({
                     ok: false,
                     status: 500,
-                    message: 'Internal Server Error'
+                    message: 'Ha ocurrido un error inesperado.'
                 });
             };
         };
@@ -115,7 +114,7 @@ class AuthController {
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: "Password reseted"
+                message: "Tu contraseña ha sido actualizada con éxito."
             });
         } catch (err) {
             if (err instanceof ServerError) {
@@ -131,6 +130,33 @@ class AuthController {
                     message: 'Internal Server Error'
                 });
             };
+        }
+    }
+
+    async deleteAccount(req, res) {
+        try {
+            const { user } = req;
+            const { password } = req.body;
+            await authService.deleteAccount({ user_id: user.id, password });
+            return res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Cuenta eliminada de forma permanente.'
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                return res.status(err.status).json({
+                    ok: false,
+                    status: err.status,
+                    message: err.message
+                });
+            } else {
+                return res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Ha ocurrido un error inesperado.'
+                });
+            }
         }
     }
 };

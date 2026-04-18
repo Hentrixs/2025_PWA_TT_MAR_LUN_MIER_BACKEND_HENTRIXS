@@ -20,6 +20,10 @@ const channelMessagesSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    edited: {
+        type: Boolean,
+        default: false
     }
 })
 

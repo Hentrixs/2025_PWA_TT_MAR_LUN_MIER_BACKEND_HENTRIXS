@@ -1,5 +1,6 @@
 import express from 'express'
 import authController from '../controllers/auth.controller.js'
+import authMiddleware from '../middlewares/authMiddleware.js';
 const authRouter = express.Router()
 
 authRouter.post(
@@ -22,7 +23,14 @@ authRouter.post( // la url que envia el email esta mala despues arreglarla. de t
     authController.resetPasswordRequest
 );
 
-authRouter.post('/reset-password/:reset_password_token', authController.resetPassword); // perfecto, esto anda joya.
+authRouter.post('/reset-password/:reset_password_token', 
+    authController.resetPassword
+); // perfecto, esto anda joya.
+
+authRouter.delete('/delete-account', 
+    authMiddleware, 
+    authController.deleteAccount
+);
 
 
 export default authRouter

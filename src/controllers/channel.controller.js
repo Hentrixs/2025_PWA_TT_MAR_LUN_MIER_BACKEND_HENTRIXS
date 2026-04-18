@@ -12,7 +12,7 @@ class channelController {
             const { workspace_id: fk_id_workspace } = req.params;
 
             if (!name || !description) {
-                throw new ServerError("Faltan campos obligatorios en el body", 400);
+                throw new ServerError("Faltan campos obligatorios para procesar la solicitud.", 400);
             }
 
             await ChannelRepository.create(fk_id_workspace, name, description);
@@ -26,11 +26,11 @@ class channelController {
             if (err instanceof ServerError) {
                 return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
             }
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
         }
     };
 
-    async getAll(req, res) {
+    async getAll(_req, res) {
         try {
             const channels_raw = await ChannelRepository.getAll();
             const channels = channels_raw.map(channel => new ChannelDTO(channel));
@@ -45,7 +45,7 @@ class channelController {
             if (err instanceof ServerError) {
                 return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
             }
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
         }
     };
 
@@ -66,31 +66,76 @@ class channelController {
             if (err instanceof ServerError) {
                 return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
             }
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
         };
     };
 
     async deleteChannelById(req, res) {
         try {
             const { channel_id } = req.params;
+            // CASCADA: Primero borramos el historial de mensajes del canal
+            await ChannelMessagesRepository.deleteMessagesByChannelId(channel_id);
+            // Luego, borramos el canal
             await ChannelRepository.deleteChannelById(channel_id);
-            return res.status(201).json({
+            return res.status(200).json({
                 ok: true,
-                status: 201,
-                message: 'Channel Borrado'
+                status: 200,
+                message: 'Canal eliminado correctamente.'
             })
         } catch (err) {
             if (err instanceof ServerError) {
                 return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
             }
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
         };
     };
+
+    async updateMessageById(req, res) {
+        try {
+            const { message_id } = req.params;
+            const { content } = req.body;
+            if (!content) throw new ServerError('El contenido no puede estar vacío', 400);
+            const updated_message = await ChannelMessagesRepository.updateMessageById(message_id, content);
+            return res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Mensaje actualizado.',
+                data: { message: updated_message }
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
+            }
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
+        }
+    }
+
+    async deleteMessageById(req, res) {
+        try {
+            const { message_id } = req.params;
+            await ChannelMessagesRepository.deleteMessageById(message_id);
+            return res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Mensaje eliminado.'
+            })
+        } catch (err) {
+            if (err instanceof ServerError) {
+                return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
+            }
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
+        }
+    }
 
     async createChannelMessage(req, res) {
         try {
             const { channel_id } = req.params;
             const { fk_id_member, content } = req.body;
+
+            if (!channel_id || !fk_id_member || !content) {
+                throw new ServerError('Faltan Credenciales', 400);
+            };
+
             await ChannelMessagesRepository.createChannelMessage(channel_id, fk_id_member, content, new Date());
 
             res.status(201).json({
@@ -102,7 +147,7 @@ class channelController {
             if (err instanceof ServerError) {
                 return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
             }
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
         }
     }
 
@@ -122,10 +167,28 @@ class channelController {
             if (err instanceof ServerError) {
                 return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
             }
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
         };
     };
 
+    async updateChannelById(req, res) {
+        try {
+            const { _id: channel_id } = req.channel;
+            const { name, description } = req.body;
+            const updated_channel = await ChannelRepository.updateChannelById(channel_id, name, description);
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Canal actualizado correctamente.',
+                data: { channel: updated_channel }
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
+            }
+            res.status(500).json({ ok: false, message: 'Ha ocurrido un error inesperado.', status: 500 });
+        }
+    }
 };
 
 

@@ -1,4 +1,5 @@
 import ChannelMessages from "../models/channelMessages.model.js";
+import ServerError from "../helpers/error.helper.js";
 
 class channelMessagesRepository {
 
@@ -13,11 +14,19 @@ class channelMessagesRepository {
 
     async getChannelMessagesHistory(fk_id_channel) {
         const channelMessagesHistory = await ChannelMessages.find({ fk_id_channel: fk_id_channel })
-            .populate({ path: 'fk_id_member', populate: { path: 'fk_id_user' } });
+            .populate({
+                path: 'fk_id_member',
+                populate: {
+                    path: 'fk_id_user',
+                    model: 'User',
+                    select: 'name'
+                }
+            })
+            .lean();
 
         const channelMessagesHistoryNormalized = channelMessagesHistory.map((msg) => {
             return {
-                id: msg._id,
+                _id: msg._id,
                 fk_id_channel: msg.fk_id_channel,
                 content: msg.content,
                 fk_id_member: msg.fk_id_member?._id,
@@ -32,6 +41,24 @@ class channelMessagesRepository {
         console.log(channelMessagesHistoryNormalized);
 
         return channelMessagesHistoryNormalized;
+    };
+
+    async updateMessageById(message_id, content) {
+        const updated_message = await ChannelMessages.findByIdAndUpdate(
+            message_id,
+            { content, edited: true },
+            { new: true }
+        );
+        if (!updated_message) throw new ServerError('Mensaje no encontrado', 404);
+        return updated_message;
+    };
+
+    async deleteMessageById(message_id) {
+        await ChannelMessages.findByIdAndDelete(message_id);
+    };
+
+    async deleteMessagesByChannelId(channel_id) {
+        await ChannelMessages.deleteMany({ fk_id_channel: channel_id });
     };
 };
 

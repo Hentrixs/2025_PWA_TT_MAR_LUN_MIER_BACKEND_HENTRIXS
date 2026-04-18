@@ -5,7 +5,7 @@ import ACCEPT_INVITATION_CONSTANTS from "../constants/acceptinvitation.constant.
 
 
 class WorkspaceMemberRepository {
-    async create(fk_id_workspace, fk_id_user, role) {
+    async create(fk_id_workspace, fk_id_user, role, status = 'pending') {
 
         if (!fk_id_workspace || !fk_id_user || !role) {
             throw new ServerError('Faltan Credenciales', 400); // no em acuerdo el status de aca fck.
@@ -14,7 +14,8 @@ class WorkspaceMemberRepository {
         const workspace = await WorkspaceMember.create({
             fk_id_workspace: fk_id_workspace,
             fk_id_user: fk_id_user,
-            role: role
+            role: role,
+            acceptInvitation: status
         });
 
     };
@@ -131,6 +132,14 @@ class WorkspaceMemberRepository {
         );
         return updatedMember;
     };
+
+    async deleteMembersByWorkspaceId(workspace_id) {
+        await WorkspaceMember.deleteMany({ fk_id_workspace: workspace_id });
+    }
+
+    async deleteMembersByUserId(user_id) {
+        await WorkspaceMember.deleteMany({ fk_id_user: user_id });
+    }
 };
 const workspaceMemberRepository = new WorkspaceMemberRepository();
 export default workspaceMemberRepository;

@@ -8,11 +8,47 @@ const channelRouter = Router({ mergeParams: true });
 
 // este channelRouter esta encastrado al workspace router el cual ya tiene el authMiddleware, no hace falta meterlo aca.
 
-channelRouter.post('/', verifyWorkspaceMiddleware, verifyMemberWorkspaceRoleMiddleware(["owner", "admin"]), ChannelController.createChannel);
-channelRouter.get('/', verifyWorkspaceMiddleware, ChannelController.getChannelByWorkspaceId);
-channelRouter.delete('/:channel_id', verifyWorkspaceMiddleware, verifyChannelMiddleware, ChannelController.deleteChannelById)
+channelRouter.post('/', 
+    verifyWorkspaceMiddleware, 
+    verifyMemberWorkspaceRoleMiddleware(["owner", "admin"]), 
+    ChannelController.createChannel
+);
 
-channelRouter.post('/:channel_id/message', verifyWorkspaceMiddleware, verifyChannelMiddleware, ChannelController.createChannelMessage);
-channelRouter.get('/:channel_id/message', verifyWorkspaceMiddleware, verifyChannelMiddleware, ChannelController.getChannelMessagesHistory);
+channelRouter.get('/', 
+    verifyWorkspaceMiddleware, 
+    ChannelController.getChannelByWorkspaceId
+);
+
+channelRouter.delete('/:channel_id', 
+    verifyWorkspaceMiddleware, 
+    verifyChannelMiddleware, 
+    ChannelController.deleteChannelById
+);
+
+channelRouter.post('/:channel_id/message', 
+    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
+    ChannelController.createChannelMessage
+);
+
+channelRouter.get('/:channel_id/message', 
+    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
+    ChannelController.getChannelMessagesHistory
+);
+
+channelRouter.delete('/:channel_id/message/:message_id', 
+    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
+    ChannelController.deleteMessageById
+);
+
+channelRouter.patch('/:channel_id/message/:message_id', 
+    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
+    ChannelController.updateMessageById
+);
+
+channelRouter.patch('/:channel_id/', 
+    verifyMemberWorkspaceRoleMiddleware(['owner','admin']), 
+    verifyChannelMiddleware, 
+    ChannelController.updateChannelById
+);
 
 export default channelRouter;

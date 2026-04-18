@@ -1,6 +1,6 @@
-import ServerError from "../helpers/error.helper";
+import ServerError from "../helpers/error.helper.js";
 import { isValidObjectId } from "mongoose";
-import ChannelRepository from "../repository/channel.repository";
+import ChannelRepository from "../repository/channel.repository.js";
 
 async function verifyChannelMiddleware(req, res, next) {
     try {
