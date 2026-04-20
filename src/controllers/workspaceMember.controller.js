@@ -23,6 +23,13 @@ class workspaceMemberController {
     async deleteMember(req, res) {
         try {
             const { member_id } = req.params;
+            const requesting_member = req.member; // Inyectado por el middleware
+
+            // Seguridad: Un miembro no puede borrarse a sí mismo desde este endpoint (Prioridad 9)
+            if (requesting_member._id.toString() === member_id) {
+                throw new ServerError('No puedes eliminarte a ti mismo del workspace. Si deseas salir, usa la opción de abandonar workspace (si existiera) o contacta a otro admin.', 400);
+            }
+
             await memberWorkspaceService.deleteMember(member_id);
 
             res.status(200).json({
@@ -40,8 +47,14 @@ class workspaceMemberController {
         try {
             const { member_id } = req.params;
             const { role } = req.body;
+            const requesting_member = req.member; // Inyectado por el middleware
 
             if (!role) throw new ServerError('Debe enviar el rol a modificar', 400);
+
+            // Seguridad: Un admin no puede bajarse el rango a sí mismo (Prioridad 9)
+            if (requesting_member._id.toString() === member_id && role === 'member') {
+                throw new ServerError('No puedes degradar tu propio rol a member.', 400);
+            }
 
             const updatedMember = await memberWorkspaceService.updateRole(member_id, role);
 
