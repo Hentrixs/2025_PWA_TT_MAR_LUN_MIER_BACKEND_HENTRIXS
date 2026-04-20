@@ -30,7 +30,8 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado. Inténtalo de nuevo más tarde.'
                 });
-                console.log(err);
+                // 
+
             }
         };
     };

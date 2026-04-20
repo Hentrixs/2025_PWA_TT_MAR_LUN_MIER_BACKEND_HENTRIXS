@@ -38,7 +38,8 @@ class channelMessagesRepository {
             }
         });
 
-        console.log(channelMessagesHistoryNormalized);
+        // 
+
 
         return channelMessagesHistoryNormalized;
     };
