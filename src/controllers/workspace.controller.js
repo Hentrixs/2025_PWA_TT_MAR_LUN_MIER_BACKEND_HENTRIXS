@@ -30,9 +30,7 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado. Inténtalo de nuevo más tarde.'
                 });
-                // 
-
-            }
+            };
         };
     };
 
@@ -62,7 +60,7 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
+            };
         };
     }
 
@@ -102,9 +100,9 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
+            };
         };
-    }
+    };
 
     async getById(req, res) {
         try {
@@ -129,9 +127,9 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
+            };
         };
-    }
+    };
 
     async updateRoleById(req, res) { // Parcialmente hecho
         try {
@@ -141,7 +139,7 @@ class workspaceController {
                 ok: true,
                 status: 201,
                 message: 'Rol actualizado correctamente.'
-            })
+            });
         } catch (err) {
             if (err instanceof ServerError) {
                 res.status(err.status).json({
@@ -155,9 +153,9 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
+            };
         };
-    }
+    };
 
     async getAll(req, res) {
         try {
@@ -181,9 +179,9 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
+            };
         };
-    }
+    };
 
     async getMemberList(req, res) {
         try {
@@ -208,9 +206,9 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
+            };
         };
-    }
+    };
 
     async getWorkspaceDetail(req, res) {
         try {
@@ -236,9 +234,9 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
-        }
-    }
+            };
+        };
+    };
 
     async updateById(req, res) {
         try {
@@ -264,7 +262,7 @@ class workspaceController {
                     status: 500,
                     message: 'Ha ocurrido un error inesperado.'
                 });
-            }
+            };
         };
     };
 };

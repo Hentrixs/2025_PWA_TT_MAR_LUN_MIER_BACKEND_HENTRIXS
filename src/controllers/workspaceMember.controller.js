@@ -1,5 +1,6 @@
 import memberWorkspaceService from '../services/memberWorkspace.service.js';
 import ServerError from '../helpers/error.helper.js';
+import ENVIRONMENT from '../config/environment.config.js';
 
 class workspaceMemberController {
 
@@ -83,21 +84,23 @@ class workspaceMemberController {
         } catch (err) {
             if (err instanceof ServerError) return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
             res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            console.log(err);
         }
     }
 
     async respondToInvitation(req, res) {
         try {
             const { token } = req.query;
-            const result = await memberWorkspaceService.respondToInvitation(token);
-            return res.status(200).json({
-                ok: true,
-                status: 200,
-                message: 'Se ha procesado la solicitud de invitacion con exito'
-            })
+            const updatedMembership = await memberWorkspaceService.respondToInvitation(token);
+
+            // Redirige al frontend notificando el estado real (accepted o rejected)
+            const status = updatedMembership.acceptInvitation;
+            return res.redirect(`${ENVIRONMENT.URL_FRONTEND}invite/respond?status=${status}`);
+
         } catch (err) {
-            if (err instanceof ServerError) return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            // Maneja el error y redirige inyectandolo en la query
+            const err_msg = encodeURIComponent(err.message || 'Error desconocido');
+            return res.redirect(`${ENVIRONMENT.URL_FRONTEND}invite/respond?status=error&message=${err_msg}`);
         }
     }
 }

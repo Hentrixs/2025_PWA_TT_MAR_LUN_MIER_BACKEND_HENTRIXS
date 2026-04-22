@@ -14,6 +14,7 @@ import authRouter from "./routes/auth.router.js"
 import channelRouter from "./routes/channel.router.js";
 import workspaceRouter from "./routes/workspace.router.js"
 import channelMessagesRouter from "./routes/channelMessages.router.js";
+import invitationRouter from "./routes/invitation.router.js";
 
 connectMongoDB()
 
@@ -27,6 +28,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/channel', channelRouter);
+app.use('/api/invitation', invitationRouter);
 
 // Ejemplo de implementacion de middleware en main.js
 // Notese qeu incluso podemos insertar otro middleware mas en el medio

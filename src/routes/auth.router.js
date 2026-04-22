@@ -5,32 +5,58 @@ const authRouter = express.Router()
 
 authRouter.post(
     '/register',
-    authController.register // esto anda
+    authController.register
 )
 
 authRouter.post(
     '/login',
-    authController.login // esto anda
+    authController.login
 )
 
 authRouter.get(
     '/verify-email',
-    authController.verifyEmail // esto anda
+    authController.verifyEmail
 )
 
-authRouter.post( // la url que envia el email esta mala despues arreglarla. de todas formas esto se ejecuta
-    '/reset-password-request',      // este anda tambien, solo falta fixear tema de arriba
+authRouter.post(
+    '/reset-password-request',
     authController.resetPasswordRequest
 );
 
-authRouter.post('/reset-password/:reset_password_token', 
+authRouter.post('/reset-password/:reset_password_token',
     authController.resetPassword
-); // perfecto, esto anda joya.
+);
 
-authRouter.delete('/delete-account', 
-    authMiddleware, 
+authRouter.put('/update_password',
+    authMiddleware,
+    authController.updatePassword
+);
+
+
+authRouter.delete('/delete-account',
+    authMiddleware,
     authController.deleteAccount
 );
 
+authRouter.patch('/update-profile',
+
+    authMiddleware,
+    authController.updateProfile
+);
+
+authRouter.get('/profile',
+    authMiddleware,
+    authController.getProfile
+);
+
+
+authRouter.post('/request-email-change',
+    authMiddleware,
+    authController.requestEmailChange
+);
+
+authRouter.get('/confirm-email-change/:token',
+    authController.confirmEmailChange
+);
 
 export default authRouter

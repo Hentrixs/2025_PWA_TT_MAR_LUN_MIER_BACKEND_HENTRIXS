@@ -35,8 +35,5 @@ workspaceMemberRouter.post('/invite',
     WorkspaceMemberController.inviteMember
 );
 
-workspaceMemberRouter.get('/invite/respond',
-    WorkspaceMemberController.respondToInvitation
-);
 
 export default workspaceMemberRouter;

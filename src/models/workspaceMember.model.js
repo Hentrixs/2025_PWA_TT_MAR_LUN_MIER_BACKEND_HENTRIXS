@@ -19,9 +19,9 @@ const workspaceMemberSchema = new mongoose.Schema({
         enum: [
             AVAILABLE_MEMBER_ROLES.OWNER,
             AVAILABLE_MEMBER_ROLES.ADMIN,
-            AVAILABLE_MEMBER_ROLES.USER
+            AVAILABLE_MEMBER_ROLES.MEMBER
         ],
-        default: AVAILABLE_MEMBER_ROLES.USER
+        default: AVAILABLE_MEMBER_ROLES.MEMBER
     },
     created_at: {
         type: Date,

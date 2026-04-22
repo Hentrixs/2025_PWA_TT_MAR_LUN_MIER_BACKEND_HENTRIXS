@@ -1,4 +1,5 @@
 import ServerError from "../helpers/error.helper.js";
+import userRepository from "../repository/user.repository.js";
 import authService from "../services/auth.service.js";
 
 class AuthController {
@@ -131,7 +132,7 @@ class AuthController {
                 });
             };
         }
-    }
+    };
 
     async deleteAccount(req, res) {
         try {
@@ -158,8 +159,131 @@ class AuthController {
                 });
             }
         }
-    }
+    };
+
+    async getProfile(req, res) {
+        try {
+            const { id } = req.user;
+            const user_dto = await authService.getProfile({ user_id: id });
+            return res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Perfil obtenido con éxito',
+                data: user_dto
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                res.status(err.status).json({
+                    ok: false,
+                    status: err.status,
+                    message: err.message
+                });
+            } else {
+                res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Ha ocurrido un error inesperado al obtener el perfil.'
+                });
+            };
+        };
+    };
+
+    async updateProfile(req, res) {
+        try {
+            const { id } = req.user;
+            const { name, description } = req.body;
+            const user_updated_dto = await authService.updateProfile({ user_id: id, name, description });
+            return res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Perfil actualizado con éxito',
+                data: user_updated_dto
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                res.status(err.status).json({
+                    ok: false,
+                    status: err.status,
+                    message: err.message
+                });
+            } else {
+                res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Ha ocurrido un error inesperado al actualizar el perfil.'
+                });
+            };
+        };
+    };
+
+    async updatePassword(req, res) {
+        try {
+            const { id } = req.user;
+            const { old_password, new_password } = req.body;
+            await authService.updatePassword({ user_id: id, old_password, new_password });
+            return res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Contraseña actualizada con éxito.'
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                res.status(err.status).json({
+                    ok: false,
+                    status: err.status,
+                    message: err.message
+                });
+            } else {
+                res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Ha ocurrido un error inesperado al actualizar la contraseña.'
+                });
+            };
+        };
+    };
+
+    async requestEmailChange(req, res) {
+        try {
+            const { id } = req.user;
+            const { password, new_email } = req.body;
+            await authService.requestEmailChange({ user_id: id, password, new_email });
+            return res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Se ha enviado un correo de confirmación a tu nueva dirección.'
+            });
+        } catch (err) {
+            if (err instanceof ServerError) {
+                res.status(err.status).json({
+                    ok: false,
+                    status: err.status,
+                    message: err.message
+                });
+            } else {
+                res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Error al solicitar el cambio de email.'
+                });
+            };
+        };
+    };
+
+    async confirmEmailChange(req, res) {
+        try {
+            const { token } = req.params;
+            await authService.confirmEmailChange({ token });
+            // Redirigir al frontend con éxito
+            return res.redirect(`${ENVIRONMENT.URL_FRONTEND}settings/email-confirmation-result?success=true`);
+        } catch (err) {
+            const message = err instanceof ServerError ? err.message : 'Error al confirmar el cambio de email.';
+            return res.redirect(`${ENVIRONMENT.URL_FRONTEND}settings/email-confirmation-result?success=false&message=${encodeURIComponent(message)}`);
+        };
+    };
+
 };
+
 
 const authController = new AuthController();
 export default authController

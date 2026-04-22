@@ -48,7 +48,6 @@ class UserRepository {
         return user
     }
 
-    //llama a algun usuario de la DB
     async getUser() {
         const user = await User.findOne()
         return user
@@ -61,6 +60,11 @@ class UserRepository {
         const user = await User.findOne({ name: name })
         return user
     }
+
+    async updatePassword(id, hashedPassword) {
+        return await User.findByIdAndUpdate(id, { password: hashedPassword }, { new: true });
+    }
+
 }
 
 

@@ -1,7 +1,7 @@
 
 const AVAILABLE_MEMBER_ROLES = {
     OWNER: 'owner',
-    USER: 'user',
+    MEMBER: 'member',
     ADMIN: 'admin'
 }
 

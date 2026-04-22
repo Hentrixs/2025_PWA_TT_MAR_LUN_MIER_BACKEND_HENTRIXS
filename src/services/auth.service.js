@@ -4,7 +4,9 @@ import mailerTransporter from "../config/mailer.config.js";
 import ServerError from "../helpers/error.helper.js";
 import userRepository from "../repository/user.repository.js";
 import bcrypt from 'bcrypt';
+import userDTO from '../dto/user.dto.js';
 import workspaceMemberRepository from '../repository/member.repository.js';
+
 
 
 class AuthService {
@@ -177,7 +179,106 @@ class AuthService {
         await workspaceMemberRepository.deleteMembersByUserId(user_id);
         await userRepository.deleteById(user_id);
     };
+
+    async getProfile({ user_id }) {
+        const user = await userRepository.getById(user_id);
+        return new userDTO(user);
+    };
+
+    async updateProfile({ user_id, name, description }) {
+        const user = await userRepository.getById(user_id);
+        if (!user) throw new ServerError('Usuario no encontrado.', 404);
+
+        const updateData = {};
+        if (name !== undefined) updateData.name = name;
+        if (description !== undefined) updateData.description = description;
+
+        const updated_user = await userRepository.updateById(user_id, updateData);
+        return new userDTO(updated_user);
+    };
+
+    async updatePassword({ user_id, old_password, new_password }) {
+        if (!old_password || !new_password) {
+            throw new ServerError('Faltan credenciales.', 400);
+        }
+
+        const user = await userRepository.getById(user_id);
+        if (!user) throw new ServerError('Usuario no encontrado.', 404);
+
+        // Verificar contraseña antigua
+        const isMatch = await bcrypt.compare(old_password, user.password);
+        if (!isMatch) {
+            throw new ServerError('La contraseña actual es incorrecta.', 401);
+        }
+
+        // Hashear nueva contraseña
+        const hashedPassword = await bcrypt.hash(new_password, 12);
+
+        await userRepository.updatePassword(user_id, hashedPassword);
+    };
+
+    async requestEmailChange({ user_id, password, new_email }) {
+        if (!password || !new_email) {
+            throw new ServerError('Faltan datos técnicos (contraseña o email).', 400);
+        }
+
+        const user = await userRepository.getById(user_id);
+        if (!user) throw new ServerError('Usuario no encontrado.', 404);
+
+        // Validar contraseña actual
+        const is_same_password = await bcrypt.compare(password, user.password);
+        if (!is_same_password) throw new ServerError('La contraseña actual es incorrecta.', 401);
+
+        // Validar que el nuevo email no esté en uso
+        const existingUser = await userRepository.getByEmail(new_email);
+        if (existingUser) throw new ServerError('Este correo electrónico ya está registrado por otro usuario.', 400);
+
+        // Generar token de cambio de email (expira en 1 hora por seguridad)
+        const emailChangeToken = jwt.sign(
+            { user_id, new_email },
+            ENVIRONMENT.JWT_SECRET_KEY,
+            { expiresIn: '1h' }
+        );
+
+        // Enviar mail
+        await mailerTransporter.sendMail({
+            from: ENVIRONMENT.MAIL_USER,
+            to: new_email,
+            subject: 'Confirma tu nuevo correo electrónico',
+            html: `
+            <h1>Cambio de correo electrónico</h1>
+            <p>Has solicitado cambiar tu correo electrónico. Haz clic en el enlace de abajo para confirmar que esta dirección te pertenece:</p>
+            <a href="${ENVIRONMENT.URL_BACKEND}api/auth/confirm-email-change/${emailChangeToken}">Confirmar cambio de email</a>
+            <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
+            `
+        });
+    };
+
+    async confirmEmailChange({ token }) {
+        if (!token) throw new ServerError('Token no proporcionado.', 400);
+
+        try {
+            const { user_id, new_email } = jwt.verify(token, ENVIRONMENT.JWT_SECRET_KEY);
+
+            const user = await userRepository.getById(user_id);
+            if (!user) throw new ServerError('Usuario no encontrado.', 404);
+
+            // Actualizar email
+            await userRepository.updateById(user_id, { email: new_email, email_verified: true });
+
+        } catch (err) {
+            if (err instanceof jwt.TokenExpiredError) {
+                throw new ServerError('El enlace ha expirado. Por favor, realiza la solicitud de nuevo.', 401);
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                throw new ServerError('El enlace es inválido.', 401);
+            } else {
+                throw err;
+            }
+        }
+    };
+
 };
+
 
 const authService = new AuthService();
 

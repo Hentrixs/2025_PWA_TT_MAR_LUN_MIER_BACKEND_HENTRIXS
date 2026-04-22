@@ -64,9 +64,9 @@ class MemberWorkspaceService {
             { expiresIn: '7d' }
         );
 
-        // 2. Armamos los links mágicos. 
-        const accept_link = `${ENVIRONMENT.URL_FRONTEND}invite/respond?token=${accept_token}&workspace_id=${workspace_id}`;
-        const reject_link = `${ENVIRONMENT.URL_FRONTEND}invite/respond?token=${reject_token}&workspace_id=${workspace_id}`;
+        // 2. Armamos los links mágicos al backend directamente en la ruta publica
+        const accept_link = `${ENVIRONMENT.URL_BACKEND}api/invitation/respond?token=${accept_token}`;
+        const reject_link = `${ENVIRONMENT.URL_BACKEND}api/invitation/respond?token=${reject_token}`;
 
         // 3. (OPCIONAL POR AHORA) Mandamos el correo. Como todavía no configuramos Nodemailer, lo comentamos e imprimimos por consola.
         await mailerTransporter.sendMail({
