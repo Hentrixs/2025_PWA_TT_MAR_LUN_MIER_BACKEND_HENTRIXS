@@ -1,10 +1,19 @@
 import { Router } from 'express';
-import authMiddleware from '../middlewares/authMiddleware.js';
+import verifyMemberWorkspaceRoleMiddleware from '../middlewares/verifyMemberWorkspaceMiddleware.js';
 import ChannelController from '../controllers/channel.controller.js';
 
-const channelMessagesRouter = Router();
+const channelMessagesRouter = Router({ mergeParams: true });
 
-channelMessagesRouter.get('/', authMiddleware, ChannelController.getChannelMessagesHistory);
-channelMessagesRouter.post('/', authMiddleware, ChannelController.createChannelMessage);
+// Note: authMiddleware / verifyWorkspaceMiddleware / verifyChannelMiddleware are handled by the parent router
+
+channelMessagesRouter.get('/', ChannelController.getChannelMessagesHistory);
+channelMessagesRouter.post('/', ChannelController.createChannelMessage);
+
+channelMessagesRouter.delete('/:message_id', ChannelController.deleteMessageById);
+
+channelMessagesRouter.patch('/:message_id',
+    verifyMemberWorkspaceRoleMiddleware([]),
+    ChannelController.updateMessageById
+);
 
 export default channelMessagesRouter;

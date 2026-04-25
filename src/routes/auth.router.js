@@ -1,15 +1,21 @@
 import express from 'express'
 import authController from '../controllers/auth.controller.js'
 import authMiddleware from '../middlewares/authMiddleware.js';
+import validateBody, { validateEmail } from '../middlewares/validateBody.middleware.js';
+
 const authRouter = express.Router()
 
 authRouter.post(
     '/register',
+    validateBody(['name', 'email', 'password']),
+    validateEmail(),
     authController.register
 )
 
 authRouter.post(
     '/login',
+    validateBody(['email', 'password']),
+    validateEmail(),
     authController.login
 )
 
@@ -20,26 +26,29 @@ authRouter.get(
 
 authRouter.post(
     '/reset-password-request',
+    validateBody(['email']),
+    validateEmail(),
     authController.resetPasswordRequest
 );
 
 authRouter.post('/reset-password/:reset_password_token',
+    validateBody(['new_password']),
     authController.resetPassword
 );
 
 authRouter.put('/update_password',
     authMiddleware,
+    validateBody(['old_password', 'new_password']),
     authController.updatePassword
 );
 
-
 authRouter.delete('/delete-account',
     authMiddleware,
+    validateBody(['password']),
     authController.deleteAccount
 );
 
 authRouter.patch('/update-profile',
-
     authMiddleware,
     authController.updateProfile
 );
@@ -49,9 +58,10 @@ authRouter.get('/profile',
     authController.getProfile
 );
 
-
 authRouter.post('/request-email-change',
     authMiddleware,
+    validateBody(['password', 'new_email']),
+    validateEmail('new_email'),
     authController.requestEmailChange
 );
 

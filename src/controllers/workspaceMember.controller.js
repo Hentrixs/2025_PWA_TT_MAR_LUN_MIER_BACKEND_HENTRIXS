@@ -4,11 +4,10 @@ import ENVIRONMENT from '../config/environment.config.js';
 
 class workspaceMemberController {
 
-    async getMemberList(req, res) {
+    async getMemberList(req, res, next) {
         try {
             const { workspace_id } = req.params;
             const members = await memberWorkspaceService.getMemberList(workspace_id);
-
             res.status(200).json({
                 ok: true,
                 status: 200,
@@ -16,49 +15,41 @@ class workspaceMemberController {
                 data: { members }
             });
         } catch (err) {
-            if (err instanceof ServerError) return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            next(err);
         }
     }
 
-    async deleteMember(req, res) {
+    async deleteMember(req, res, next) {
         try {
             const { member_id } = req.params;
-            const requesting_member = req.member; // Inyectado por el middleware
+            const requesting_member = req.member;
 
-            // Seguridad: Un miembro no puede borrarse a sí mismo desde este endpoint (Prioridad 9)
             if (requesting_member._id.toString() === member_id) {
-                throw new ServerError('No puedes eliminarte a ti mismo del workspace. Si deseas salir, usa la opción de abandonar workspace (si existiera) o contacta a otro admin.', 400);
+                throw new ServerError('No puedes eliminarte a ti mismo del workspace.', 400);
             }
 
             await memberWorkspaceService.deleteMember(member_id);
-
             res.status(200).json({
                 ok: true,
                 status: 200,
                 message: 'Miembro eliminado correctamente'
             });
         } catch (err) {
-            if (err instanceof ServerError) return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            next(err);
         }
     }
 
-    async updateRole(req, res) {
+    async updateRole(req, res, next) {
         try {
             const { member_id } = req.params;
             const { role } = req.body;
-            const requesting_member = req.member; // Inyectado por el middleware
+            const requesting_member = req.member;
 
-            if (!role) throw new ServerError('Debe enviar el rol a modificar', 400);
-
-            // Seguridad: Un admin no puede bajarse el rango a sí mismo (Prioridad 9)
             if (requesting_member._id.toString() === member_id && role === 'member') {
                 throw new ServerError('No puedes degradar tu propio rol a member.', 400);
             }
 
             const updatedMember = await memberWorkspaceService.updateRole(member_id, role);
-
             res.status(200).json({
                 ok: true,
                 status: 200,
@@ -66,12 +57,11 @@ class workspaceMemberController {
                 data: { member: updatedMember }
             });
         } catch (err) {
-            if (err instanceof ServerError) return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
+            next(err);
         }
     }
 
-    async inviteMember(req, res) {
+    async inviteMember(req, res, next) {
         try {
             const { workspace_id } = req.params;
             const { email, role } = req.body;
@@ -80,11 +70,9 @@ class workspaceMemberController {
                 ok: true,
                 status: 200,
                 message: 'Invitacion Enviada'
-            })
+            });
         } catch (err) {
-            if (err instanceof ServerError) return res.status(err.status).json({ ok: false, message: err.message, status: err.status });
-            res.status(500).json({ ok: false, message: 'Error interno del servidor.', status: 500 });
-            console.log(err);
+            next(err);
         }
     }
 
@@ -92,13 +80,9 @@ class workspaceMemberController {
         try {
             const { token } = req.query;
             const updatedMembership = await memberWorkspaceService.respondToInvitation(token);
-
-            // Redirige al frontend notificando el estado real (accepted o rejected)
             const status = updatedMembership.acceptInvitation;
             return res.redirect(`${ENVIRONMENT.URL_FRONTEND}invite/respond?status=${status}`);
-
         } catch (err) {
-            // Maneja el error y redirige inyectandolo en la query
             const err_msg = encodeURIComponent(err.message || 'Error desconocido');
             return res.redirect(`${ENVIRONMENT.URL_FRONTEND}invite/respond?status=error&message=${err_msg}`);
         }

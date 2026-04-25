@@ -58,6 +58,12 @@ class channelMessagesRepository {
         await ChannelMessages.findByIdAndDelete(message_id);
     };
 
+    async getMessageById(message_id) {
+        const message = await ChannelMessages.findById(message_id).lean();
+        if (!message) throw new ServerError('Mensaje no encontrado', 404);
+        return message;
+    };
+
     async deleteMessagesByChannelId(channel_id) {
         await ChannelMessages.deleteMany({ fk_id_channel: channel_id });
     };

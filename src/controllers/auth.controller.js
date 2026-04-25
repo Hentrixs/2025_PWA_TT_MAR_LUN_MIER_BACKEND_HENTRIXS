@@ -1,10 +1,8 @@
-import ServerError from "../helpers/error.helper.js";
-import userRepository from "../repository/user.repository.js";
 import authService from "../services/auth.service.js";
 
 class AuthController {
 
-    async register(req, res) {
+    async register(req, res, next) {
         try {
             const { name, email, password } = req.body;
             await authService.register({ name, email, password });
@@ -12,47 +10,23 @@ class AuthController {
                 ok: true,
                 status: 201,
                 message: 'Usuario registrado con éxito. Por favor, verifica tu correo electrónico.'
-            })
+            });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado en el servidor. Inténtalo de nuevo más tarde.'
-                });
-            };
-        };
-    };
+            next(err);
+        }
+    }
 
-    async verifyEmail(req, res) {
+    async verifyEmail(req, res, next) {
         try {
             const { verify_email_token } = req.query;
             await authService.verifyEmail({ verify_email_token });
             res.status(200).json({ ok: true, status: 200, message: '¡Cuenta verificada! Ya puedes iniciar sesión.' });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado en el servidor.'
-                });
-            };
+            next(err);
         }
-    };
+    }
 
-    async login(req, res) {
+    async login(req, res, next) {
         try {
             const { email, password } = req.body;
             const auth_token = await authService.login({ email, password });
@@ -60,28 +34,14 @@ class AuthController {
                 message: 'Sesión iniciada correctamente.',
                 status: 200,
                 ok: true,
-                data: {
-                    auth_token
-                }
+                data: { auth_token }
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado.'
-                });
-            };
-        };
-    };
+            next(err);
+        }
+    }
 
-    async resetPasswordRequest(req, res) {
+    async resetPasswordRequest(req, res, next) {
         try {
             const { email } = req.body;
             await authService.resetPasswordRequest({ email });
@@ -91,23 +51,11 @@ class AuthController {
                 message: 'Si el correo existe, recibirás un enlace para restablecer tu contraseña en unos minutos.'
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado.'
-                });
-            };
-        };
-    };
+            next(err);
+        }
+    }
 
-    async resetPassword(req, res) {
+    async resetPassword(req, res, next) {
         try {
             const { reset_password_token } = req.params;
             const { new_password } = req.body;
@@ -118,23 +66,11 @@ class AuthController {
                 message: "Tu contraseña ha sido actualizada con éxito."
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Internal Server Error'
-                });
-            };
+            next(err);
         }
-    };
+    }
 
-    async deleteAccount(req, res) {
+    async deleteAccount(req, res, next) {
         try {
             const { user } = req;
             const { password } = req.body;
@@ -145,23 +81,11 @@ class AuthController {
                 message: 'Cuenta eliminada de forma permanente.'
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                return res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                return res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado.'
-                });
-            }
+            next(err);
         }
-    };
+    }
 
-    async getProfile(req, res) {
+    async getProfile(req, res, next) {
         try {
             const { id } = req.user;
             const user_dto = await authService.getProfile({ user_id: id });
@@ -172,23 +96,11 @@ class AuthController {
                 data: user_dto
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado al obtener el perfil.'
-                });
-            };
-        };
-    };
+            next(err);
+        }
+    }
 
-    async updateProfile(req, res) {
+    async updateProfile(req, res, next) {
         try {
             const { id } = req.user;
             const { name, description } = req.body;
@@ -200,23 +112,11 @@ class AuthController {
                 data: user_updated_dto
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado al actualizar el perfil.'
-                });
-            };
-        };
-    };
+            next(err);
+        }
+    }
 
-    async updatePassword(req, res) {
+    async updatePassword(req, res, next) {
         try {
             const { id } = req.user;
             const { old_password, new_password } = req.body;
@@ -227,23 +127,11 @@ class AuthController {
                 message: 'Contraseña actualizada con éxito.'
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Ha ocurrido un error inesperado al actualizar la contraseña.'
-                });
-            };
-        };
-    };
+            next(err);
+        }
+    }
 
-    async requestEmailChange(req, res) {
+    async requestEmailChange(req, res, next) {
         try {
             const { id } = req.user;
             const { password, new_email } = req.body;
@@ -254,36 +142,21 @@ class AuthController {
                 message: 'Se ha enviado un correo de confirmación a tu nueva dirección.'
             });
         } catch (err) {
-            if (err instanceof ServerError) {
-                res.status(err.status).json({
-                    ok: false,
-                    status: err.status,
-                    message: err.message
-                });
-            } else {
-                res.status(500).json({
-                    ok: false,
-                    status: 500,
-                    message: 'Error al solicitar el cambio de email.'
-                });
-            };
-        };
-    };
+            next(err);
+        }
+    }
 
     async confirmEmailChange(req, res) {
         try {
             const { token } = req.params;
             await authService.confirmEmailChange({ token });
-            // Redirigir al frontend con éxito
             return res.redirect(`${ENVIRONMENT.URL_FRONTEND}settings/email-confirmation-result?success=true`);
         } catch (err) {
             const message = err instanceof ServerError ? err.message : 'Error al confirmar el cambio de email.';
             return res.redirect(`${ENVIRONMENT.URL_FRONTEND}settings/email-confirmation-result?success=false&message=${encodeURIComponent(message)}`);
-        };
-    };
-
-};
-
+        }
+    }
+}
 
 const authController = new AuthController();
-export default authController
+export default authController;

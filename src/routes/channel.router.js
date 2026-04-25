@@ -3,51 +3,40 @@ import ChannelController from '../controllers/channel.controller.js';
 import verifyMemberWorkspaceRoleMiddleware from "../middlewares/verifyMemberWorkspaceMiddleware.js";
 import verifyWorkspaceMiddleware from '../middlewares/verifyWorkspace.middleware.js';
 import verifyChannelMiddleware from '../middlewares/verifyChannel.middleware.js';
+import channelMessagesRouter from './channelMessages.router.js';
+import validateBody from '../middlewares/validateBody.middleware.js';
 
 const channelRouter = Router({ mergeParams: true });
 
 // este channelRouter esta encastrado al workspace router el cual ya tiene el authMiddleware, no hace falta meterlo aca.
 
-channelRouter.post('/', 
-    verifyWorkspaceMiddleware, 
-    verifyMemberWorkspaceRoleMiddleware(["owner", "admin"]), 
+channelRouter.post('/',
+    verifyWorkspaceMiddleware,
+    verifyMemberWorkspaceRoleMiddleware(["owner", "admin"]),
+    validateBody(['name', 'description']),
     ChannelController.createChannel
 );
 
-channelRouter.get('/', 
-    verifyWorkspaceMiddleware, 
+channelRouter.get('/',
+    verifyWorkspaceMiddleware,
     ChannelController.getChannelByWorkspaceId
 );
 
-channelRouter.delete('/:channel_id', 
-    verifyWorkspaceMiddleware, 
-    verifyChannelMiddleware, 
+channelRouter.delete('/:channel_id',
+    verifyWorkspaceMiddleware,
+    verifyChannelMiddleware,
     ChannelController.deleteChannelById
 );
 
-channelRouter.post('/:channel_id/message', 
-    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
-    ChannelController.createChannelMessage
+channelRouter.use('/:channel_id/message',
+    verifyWorkspaceMiddleware,
+    verifyChannelMiddleware,
+    channelMessagesRouter
 );
 
-channelRouter.get('/:channel_id/message', 
-    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
-    ChannelController.getChannelMessagesHistory
-);
-
-channelRouter.delete('/:channel_id/message/:message_id', 
-    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
-    ChannelController.deleteMessageById
-);
-
-channelRouter.patch('/:channel_id/message/:message_id', 
-    verifyWorkspaceMiddleware, verifyChannelMiddleware, 
-    ChannelController.updateMessageById
-);
-
-channelRouter.patch('/:channel_id/', 
-    verifyMemberWorkspaceRoleMiddleware(['owner','admin']), 
-    verifyChannelMiddleware, 
+channelRouter.patch('/:channel_id/',
+    verifyMemberWorkspaceRoleMiddleware(['owner', 'admin']),
+    verifyChannelMiddleware,
     ChannelController.updateChannelById
 );
 
