@@ -1,0 +1,725 @@
+{
+  "info": {
+    "name": "GreenSlack API",
+    "_postman_id": "greenslack-api-collection-2026",
+    "description": "GreenSlack — API REST de mensajería colaborativa estilo Slack",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Check API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            }
+          }
+        },
+        {
+          "name": "Check Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/page",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", "page"]
+            }
+          }
+        },
+        {
+          "name": "Check Database",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/database",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", "database"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"\",\n  \"password\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-email?verify_email_token=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-email"],
+              "query": [
+                { "key": "verify_email_token", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reset Password Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/reset-password-request",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "reset-password-request"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password Confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_password\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/reset-password/:reset_token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "reset-password", ":reset_token"],
+              "variable": [
+                { "key": "reset_token", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Confirm Email Change",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/confirm-email-change/:confirm_token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "confirm-email-change", ":confirm_token"],
+              "variable": [
+                { "key": "confirm_token", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"old_password\": \"\",\n  \"new_password\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/update_password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "update_password"]
+            }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/delete-account",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "delete-account"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/update-profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "update-profile"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Request Email Change",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"\",\n  \"new_email\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/request-email-change",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "request-email-change"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invitaciones",
+      "item": [
+        {
+          "name": "Responder Invitación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/invitation/respond?token=&response=accept",
+              "host": ["{{base_url}}"],
+              "path": ["api", "invitation", "respond"],
+              "query": [
+                { "key": "token", "value": "" },
+                { "key": "response", "value": "accept" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workspaces",
+      "item": [
+        {
+          "name": "Listar Workspaces",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace"]
+            }
+          }
+        },
+        {
+          "name": "Crear Workspace",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"description\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace"]
+            }
+          }
+        },
+        {
+          "name": "Detalle Workspace",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/workspaceDetail",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "workspaceDetail"],
+              "variable": [
+                { "key": "workspace_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Editar Workspace",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"description\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Workspace",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Miembros",
+      "item": [
+        {
+          "name": "Listar Miembros",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/member",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "member"],
+              "variable": [
+                { "key": "workspace_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Invitar Miembro",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"\",\n  \"role\": \"member\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/member/invite",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "member", "invite"],
+              "variable": [
+                { "key": "workspace_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar Rol de Miembro",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"member\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/member/:member_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "member", ":member_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "member_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Miembro",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/member/:member_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "member", ":member_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "member_id", "value": "" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Canales",
+      "item": [
+        {
+          "name": "Listar Canales",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel"],
+              "variable": [
+                { "key": "workspace_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Canal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel"],
+              "variable": [
+                { "key": "workspace_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Editar Canal",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "channel_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Canal",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "channel_id", "value": "" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mensajes de Canal",
+      "item": [
+        {
+          "name": "Historial de Mensajes",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "channel_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Enviar Mensaje",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "channel_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Editar Mensaje",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message/:message_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message", ":message_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "channel_id", "value": "" },
+                { "key": "message_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Mensaje",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message/:message_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message", ":message_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "channel_id", "value": "" },
+                { "key": "message_id", "value": "" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mensajes Directos",
+      "item": [
+        {
+          "name": "Historial de DMs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/dm/:other_member_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "dm", ":other_member_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "other_member_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Enviar DM",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/dm/:other_member_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "dm", ":other_member_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "other_member_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Editar DM",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/workspace/:workspace_id/dm/:other_member_id/message/:message_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "workspace", ":workspace_id", "dm", ":other_member_id", "message", ":message_id"],
+              "variable": [
+                { "key": "workspace_id", "value": "" },
+                { "key": "other_member_id", "value": "" },
+                { "key": "message_id", "value": "" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
