@@ -46,7 +46,7 @@ class WorkspaceRepository {
         const updated_workspace = await WorkspaceModel.findByIdAndUpdate(
             workspace_id,
             updates,
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!updated_workspace) throw new ServerError('Workspace no encontrado', 404);
         return updated_workspace;

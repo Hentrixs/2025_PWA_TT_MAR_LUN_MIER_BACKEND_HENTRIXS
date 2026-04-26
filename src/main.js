@@ -1,21 +1,40 @@
-import ENVIRONMENT from "./config/environment.config.js"
+import ENVIRONMENT from "./config/environment.config.js";
 import cors from 'cors';
 import errorHandlerMiddleware from "./middlewares/errorHandler.middleware.js";
-import connectMongoDB from "./config/mongoDB.config.js"
+import connectMongoDB from "./config/mongoDB.config.js";
 
 import express from 'express';
 
-import healthRouter from "./routes/health.router.js"
-import authRouter from "./routes/auth.router.js"
-import workspaceRouter from "./routes/workspace.router.js"
+import healthRouter from "./routes/health.router.js";
+import authRouter from "./routes/auth.router.js";
+import workspaceRouter from "./routes/workspace.router.js";
 import invitationRouter from "./routes/invitation.router.js";
 
-connectMongoDB()
+connectMongoDB();
 
-const app = express()
+const app = express();
+
+const blockedOrgins = [
+    '' // Dejada vacia la blacklist porque por ahora no hay nadie a quien quiera blockear 
+];
+
+app.use(
+    cors(
+        {
+            origin: (origin, callback) => {
+                if (blockedOrgins.includes(origin)) {
+                    callback(new ServerError('No autorizado', 403))
+                } else {
+                    callback(null, true)
+                }
+            }
+        }
+    )
+);
+
 
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);

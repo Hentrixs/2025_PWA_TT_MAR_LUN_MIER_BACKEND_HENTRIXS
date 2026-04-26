@@ -48,7 +48,7 @@ class DirectMessageRepository {
         const updated = await DirectMessage.findByIdAndUpdate(
             message_id,
             { content, edited: true },
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!updated) throw new ServerError('Mensaje no encontrado', 404);
         return updated;

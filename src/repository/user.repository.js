@@ -62,7 +62,7 @@ class UserRepository {
     }
 
     async updatePassword(id, hashedPassword) {
-        return await User.findByIdAndUpdate(id, { password: hashedPassword }, { new: true });
+        return await User.findByIdAndUpdate(id, { password: hashedPassword }, { returnDocument: 'after' });
     }
 
 }

@@ -43,7 +43,7 @@ class channelRepository {
         const updated_channel = await Channel.findByIdAndUpdate(
             channel_id,
             update,
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!updated_channel) throw new ServerError('Canal no encontrado', 404);
         return updated_channel;

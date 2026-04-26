@@ -42,7 +42,7 @@ class WorkspaceMemberRepository {
         const new_workspace_member = await WorkspaceMember.findByIdAndUpdate(
             member_id,
             { role: role },
-            { new: true }
+            { returnDocument: 'after' }
         );
         return new_workspace_member;
     };
@@ -128,7 +128,7 @@ class WorkspaceMemberRepository {
         const updatedMember = await WorkspaceMember.findByIdAndUpdate(
             member_id,
             { acceptInvitation: status },
-            { new: true }
+            { returnDocument: 'after' }
         );
         return updatedMember;
     };

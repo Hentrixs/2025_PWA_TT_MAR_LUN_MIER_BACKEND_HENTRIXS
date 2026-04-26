@@ -48,7 +48,7 @@ class channelMessagesRepository {
         const updated_message = await ChannelMessages.findByIdAndUpdate(
             message_id,
             { content, edited: true },
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!updated_message) throw new ServerError('Mensaje no encontrado', 404);
         return updated_message;

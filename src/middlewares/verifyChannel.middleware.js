@@ -4,8 +4,8 @@ import ChannelRepository from "../repository/channel.repository.js";
 
 async function verifyChannelMiddleware(req, res, next) {
     try {
-        const { channel_id } = req.params;
-        const workspace_id = req.workspace._id;
+        const { channel_id, workspace_id } = req.params;
+
         if (!channel_id) {
             throw new ServerError('No se proporciono espacio de trabajo');
         };
