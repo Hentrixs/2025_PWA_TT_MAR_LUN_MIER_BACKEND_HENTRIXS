@@ -13,6 +13,7 @@ import invitationRouter from "./routes/invitation.router.js";
 connectMongoDB();
 
 const app = express();
+export default app;
 
 const blockedOrgins = [
     '' // Dejada vacia la blacklist porque por ahora no hay nadie a quien quiera blockear 
@@ -32,8 +33,6 @@ app.use(
     )
 );
 
-
-app.use(cors());
 app.use(express.json());
 
 app.use('/api/health', healthRouter);
