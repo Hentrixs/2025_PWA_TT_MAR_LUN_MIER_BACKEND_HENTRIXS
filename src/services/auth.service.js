@@ -109,9 +109,9 @@ class AuthService {
         return auth_token;
     };
 
-    async resetPasswordRequest({ email }) {
-        if (!email) {
-            throw new ServerError('No se envio email', 400)
+    async resetPasswordRequest({ email, new_password }) {
+        if (!email || !new_password) {
+            throw new ServerError('Email y nueva contraseña son obligatorios.', 400)
         };
 
         const user = await userRepository.getByEmail(email);
@@ -119,23 +119,24 @@ class AuthService {
             throw new ServerError('Si el correo existe, recibirás un enlace para restablecer tu contraseña.', 404);
         };
 
-        const auth_token = jwt.sign({ email: email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: "1d" });
+        const hashed_password = await bcrypt.hash(new_password, 12);
+        const auth_token = jwt.sign({ email, hashed_password }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: "1d" });
 
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: email,
             subject: 'Restablecer Password',
             html: `
-            <h1>Bienvenido, por favor restablece tu password</h1>
-            <a href="${ENVIRONMENT.URL_BACKEND}api/auth/reset-password/${auth_token}">Click aqui para restablecer</a>
+            <h1>Bienvenido, por favor confirma el restablecimiento de tu contraseña</h1>
+            <a href="${ENVIRONMENT.URL_BACKEND}api/auth/reset-password/${auth_token}">Click aqui para confirmar</a>
             `,
         });
         return;
     };
 
-    async resetPassword({ reset_token, new_password }) {
-        if (!reset_token || !new_password) {
-            throw new ServerError('Datos incompletos para el restablecimiento de contraseña.', 400);
+    async resetPasswordConfirm({ reset_token }) {
+        if (!reset_token) {
+            throw new ServerError('Token no proporcionado.', 400);
         }
         try {
             // jwt.verify abre el token y se asegura de que haya sido firmado con TU LLAVE SECRETA, no con la nueva contraseña!
@@ -146,8 +147,7 @@ class AuthService {
                 throw new ServerError('El usuario asociado a esta petición ya no existe', 404);
             };
 
-            const hashedPassword = await bcrypt.hash(new_password, 12);
-            await userRepository.updateById(user._id, { password: hashedPassword });
+            await userRepository.updateById(user._id, { password: payload.hashed_password });
 
         } catch (err) {
             if (err instanceof jwt.TokenExpiredError) {

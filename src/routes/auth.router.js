@@ -26,14 +26,13 @@ authRouter.get(
 
 authRouter.post(
     '/reset-password-request',
-    validateBody(['email']),
+    validateBody(['email', 'new_password']),
     validateEmail(),
     authController.resetPasswordRequest
 );
 
-authRouter.post('/reset-password/:reset_password_token',
-    validateBody(['new_password']),
-    authController.resetPassword
+authRouter.get('/reset-password/:reset_password_token',
+    authController.resetPasswordConfirm
 );
 
 authRouter.put('/update_password',

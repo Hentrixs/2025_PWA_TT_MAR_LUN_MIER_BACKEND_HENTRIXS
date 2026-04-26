@@ -1,4 +1,6 @@
 import authService from "../services/auth.service.js";
+import ENVIRONMENT from "../config/environment.config.js";
+import ServerError from "../helpers/error.helper.js";
 
 class AuthController {
 
@@ -43,30 +45,26 @@ class AuthController {
 
     async resetPasswordRequest(req, res, next) {
         try {
-            const { email } = req.body;
-            await authService.resetPasswordRequest({ email });
+            const { email, new_password } = req.body;
+            await authService.resetPasswordRequest({ email, new_password });
             res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Si el correo existe, recibirás un enlace para restablecer tu contraseña en unos minutos.'
+                message: 'Si el correo existe, recibirás un enlace para confirmar el restablecimiento en unos minutos.'
             });
         } catch (err) {
             next(err);
         }
     }
 
-    async resetPassword(req, res, next) {
+    async resetPasswordConfirm(req, res) {
         try {
             const { reset_password_token } = req.params;
-            const { new_password } = req.body;
-            await authService.resetPassword({ reset_token: reset_password_token, new_password });
-            return res.status(200).json({
-                ok: true,
-                status: 200,
-                message: "Tu contraseña ha sido actualizada con éxito."
-            });
+            await authService.resetPasswordConfirm({ reset_token: reset_password_token });
+            return res.redirect(`${ENVIRONMENT.URL_FRONTEND}reset-password-result?success=true`);
         } catch (err) {
-            next(err);
+            const message = err instanceof ServerError ? err.message : 'Error al restablecer la contraseña.';
+            return res.redirect(`${ENVIRONMENT.URL_FRONTEND}reset-password-result?success=false&message=${encodeURIComponent(message)}`);
         }
     }
 

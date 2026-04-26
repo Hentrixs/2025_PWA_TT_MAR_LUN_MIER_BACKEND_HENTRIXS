@@ -124,7 +124,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"\"\n}",
+              "raw": "{\n  \"email\": \"\",\n  \"new_password\": \"\"\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": {
@@ -137,15 +137,8 @@
         {
           "name": "Reset Password Confirm",
           "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"new_password\": \"\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{base_url}}/api/auth/reset-password/:reset_token",
               "host": ["{{base_url}}"],
