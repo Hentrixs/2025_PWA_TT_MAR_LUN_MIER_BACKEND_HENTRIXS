@@ -8,7 +8,7 @@ class WorkspaceMemberRepository {
     async create(fk_id_workspace, fk_id_user, role, status = 'pending') {
 
         if (!fk_id_workspace || !fk_id_user || !role) {
-            throw new ServerError('Faltan Credenciales', 400); // no em acuerdo el status de aca fck.
+            throw new ServerError('Faltan Credenciales', 400);
         };
 
         const workspace = await WorkspaceMember.create({
@@ -57,15 +57,6 @@ class WorkspaceMemberRepository {
             throw new ServerError('Faltan Credenciales', 400);
         };
 
-        /*
-        // Esta es una de las cosas que mas me cuestan, voy a dejar esto anotado para que no se me olvide.
-        
-        con el metodo populate podemos traer los datos relacionados a las referencias que tenemos en el modelo, 
-        en este caso fk_id_user y fk_id_workspace.
-        Entonces si quiero traer el nombre de usuario de cada miembro podria hacer un populate de fk_id_user y 
-        seleccionar solo el campo name, quedando asi:
-        */
-
         const members = await WorkspaceMember.find({ fk_id_workspace: fk_id_workspace })
             .populate('fk_id_user', 'name email')
             .populate('fk_id_workspace', 'title description')
@@ -101,7 +92,6 @@ class WorkspaceMemberRepository {
         };
 
         const members = await WorkspaceMember.find({ fk_id_user: user_id }).populate('fk_id_workspace');
-        // no puse un if > ServerError() aca porque el que este vacio no es un error como tal.
 
         const validMembers = members.filter(
             (member) => member.fk_id_workspace != null

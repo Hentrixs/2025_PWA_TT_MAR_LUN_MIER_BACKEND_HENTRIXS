@@ -13,7 +13,6 @@ class AuthService {
     async register({ name, email, password }) {
         if (!name || !email || !password) {
             throw new ServerError('Todos los campos son obligatorios: nombre, email y contraseña.', 400);
-            // porque aca segun tu es 400 y no 404 o 401
         };
 
         const userByEmail = await userRepository.getByEmail(email);
@@ -26,23 +25,17 @@ class AuthService {
             throw new ServerError('El nombre de usuario elegido ya está en uso.', 400);
         };
 
-        const hashedPassword = await bcrypt.hash(password, 12); // encripacion del password. porque 12 es el recomendado? yo pensaba que era 10.
-        await userRepository.create(name, email, hashedPassword); // es verdad, yo aca estaba por pasar el password sin hashear
-
-        // aca va lo de enviar el mail de verificacion
-        await this.sendVerifyEmail({ email, name }); // cuando llegue el momento explicame porque solo se pasan 2 parametros aca.
+        const hashedPassword = await bcrypt.hash(password, 12);
+        await userRepository.create(name, email, hashedPassword);
+        await this.sendVerifyEmail({ email, name });
     };
 
     async sendVerifyEmail({ email, name }) {
-        // crea y firma un token. como siempre, los datos no sensibles van en el payload y en los sensibles van en el signature.
-        // pregunta, la ENVIRONMENT.JWT_SECRET_KEY no hace falta encriptarla para que no la decifren ?
-        // aca lo que no entiendo es porque la parte del secret key no se descubre y las demas si.
-
         const verifyEmailToken = jwt.sign({ email: email, name: name }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: '5d' });
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: email,
-            subject: `Bienvenido ${name}, verifica tu correo electronico`, // que era subject?
+            subject: `Bienvenido ${name}, verifica tu correo electronico`,
             html: `
             <h1>Verifica tu correo electrónico</h1>
             <p>Tu cuenta ha sido creada con éxito. Para comenzar a usar Slack Clone, por favor verifica tu dirección de correo electrónico haciendo clic en el siguiente enlace:</p>
@@ -58,7 +51,6 @@ class AuthService {
             throw new ServerError('Token de verificación no encontrado.', 400);
         };
         try {
-            // Esto checkea el token usando la misma clave pero desencriptada no?
             const { email, name } = jwt.verify(verify_email_token, ENVIRONMENT.JWT_SECRET_KEY);
             const user = await userRepository.getByEmail(email);
             if (!user) {
@@ -71,13 +63,13 @@ class AuthService {
                 if (!user_updated.email_verified) {
                     throw new ServerError('Error al actualizar el estado de verificación. Inténtalo de nuevo.', 500);
                 } else {
-                    return user_updated // que pasa aca? y esto se retornaba?
+                    return user_updated
                 }
 
             };
-        } catch (err) { //que es eso de jwt.TokenExpiredError
+        } catch (err) {
             if (err instanceof jwt.TokenExpiredError) {
-                const { email, name } = jwt.decode(verify_email_token); // Esto saca el payload del token.
+                const { email, name } = jwt.decode(verify_email_token);
                 await this.sendVerifyEmail({ email, name });
                 throw new ServerError('El enlace de verificación ha expirado. Te hemos enviado uno nuevo a tu correo.', 401)
             } else if (err instanceof jwt.JsonWebTokenError) {
@@ -96,7 +88,7 @@ class AuthService {
         if (!user.email_verified) {
             throw new ServerError('Tu cuenta aún no ha sido verificada. Revisa tu bandeja de entrada.', 401);
         }
-        const is_same_password = await bcrypt.compare(password, user.password); // menos mal que me avisaste porque se me olvido esto
+        const is_same_password = await bcrypt.compare(password, user.password);
 
 
         if (!is_same_password) {
@@ -159,7 +151,7 @@ class AuthService {
 
         } catch (err) {
             if (err instanceof jwt.TokenExpiredError) {
-                throw new ServerError('El enlace ha expirado. Por favor, solicita uno nuevo.', 401); // esto veamoslo al final, pero no era que habia un mecanismo en verifyemail para reenviar el token o algo asi?
+                throw new ServerError('El enlace ha expirado. Por favor, solicita uno nuevo.', 401);
             } else if (err instanceof jwt.JsonWebTokenError) {
                 throw new ServerError('El enlace es inválido o se encuentra dañado.', 401);
             } else {

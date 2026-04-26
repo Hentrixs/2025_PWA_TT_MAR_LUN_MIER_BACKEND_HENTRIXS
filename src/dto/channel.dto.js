@@ -8,6 +8,6 @@ class ChannelDTO {
         this.channel_workspace_id = channel.fk_id_workspace;
         this.channel_is_active = channel.is_active;
     };
-}; {/* TODO: Este es solo del DTO para el Channel, falta para las demas cosas */ }
+};
 
 export default ChannelDTO;
