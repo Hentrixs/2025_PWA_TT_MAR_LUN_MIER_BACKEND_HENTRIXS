@@ -2,9 +2,10 @@
 
 API REST de una aplicación de mensajería colaborativa estilo Slack. Permite crear workspaces, organizarlos en canales y comunicarse mediante mensajes de canal o mensajes directos entre miembros.
 
-URL Deploy =
-URL Repo Frontend = 
-URL Repo Backend =
+URL Deploy = https://greenslack.vercel.app/
+URL Repo Frontend = https://github.com/Hentrixs/2025_PWA_TT_MAR_LUN_MIER_FRONTEND_HENTRIXS
+URL Repo Backend = https://github.com/Hentrixs/2025_PWA_TT_MAR_LUN_MIER_BACKEND_HENTRIXS
+
 ---
 
 ## Tecnologias Usadas
