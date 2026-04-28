@@ -7,8 +7,8 @@
   },
   "variable": [
     {
-      "key": "base_url",
-      "value": "http://localhost:3000",
+      "key": "API_GREENSLACK_URL",
+      "value": "https://2025-pwa-tt-mar-lun-mier-backend-he.vercel.app",
       "type": "string"
     },
     {
@@ -27,8 +27,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/health",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/health",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "health"]
             }
           }
@@ -39,8 +39,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/health/page",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/health/page",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "health", "page"]
             }
           }
@@ -51,8 +51,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/health/database",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/health/database",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "health", "database"]
             }
           }
@@ -75,8 +75,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/auth/register",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/register",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "register"]
             }
           }
@@ -94,8 +94,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/auth/login",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/login",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "login"]
             }
           }
@@ -106,8 +106,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/auth/verify-email?verify_email_token=",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/verify-email?verify_email_token=",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "verify-email"],
               "query": [
                 { "key": "verify_email_token", "value": "" }
@@ -128,8 +128,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/auth/reset-password-request",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/reset-password-request",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "reset-password-request"]
             }
           }
@@ -140,8 +140,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/auth/reset-password/:reset_token",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/reset-password/:reset_token",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "reset-password", ":reset_token"],
               "variable": [
                 { "key": "reset_token", "value": "" }
@@ -155,8 +155,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/auth/confirm-email-change/:confirm_token",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/confirm-email-change/:confirm_token",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "confirm-email-change", ":confirm_token"],
               "variable": [
                 { "key": "confirm_token", "value": "" }
@@ -178,8 +178,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/auth/update_password",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/update_password",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "update_password"]
             }
           }
@@ -198,8 +198,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/auth/delete-account",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/delete-account",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "delete-account"]
             }
           }
@@ -218,8 +218,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/auth/update-profile",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/update-profile",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "update-profile"]
             }
           }
@@ -232,8 +232,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/auth/profile",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/profile",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "profile"]
             }
           }
@@ -252,8 +252,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/auth/request-email-change",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/auth/request-email-change",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "auth", "request-email-change"]
             }
           }
@@ -269,8 +269,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/invitation/respond?token=&response=accept",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/invitation/respond?token=&response=accept",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "invitation", "respond"],
               "query": [
                 { "key": "token", "value": "" },
@@ -292,8 +292,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace"]
             }
           }
@@ -312,8 +312,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace"]
             }
           }
@@ -326,8 +326,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/workspaceDetail",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/workspaceDetail",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "workspaceDetail"],
               "variable": [
                 { "key": "workspace_id", "value": "" }
@@ -349,8 +349,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" }
@@ -366,8 +366,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" }
@@ -388,8 +388,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/member",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/member",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "member"],
               "variable": [
                 { "key": "workspace_id", "value": "" }
@@ -411,8 +411,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/member/invite",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/member/invite",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "member", "invite"],
               "variable": [
                 { "key": "workspace_id", "value": "" }
@@ -434,8 +434,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/member/:member_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/member/:member_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "member", ":member_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -452,8 +452,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/member/:member_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/member/:member_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "member", ":member_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -475,8 +475,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel"],
               "variable": [
                 { "key": "workspace_id", "value": "" }
@@ -498,8 +498,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel"],
               "variable": [
                 { "key": "workspace_id", "value": "" }
@@ -521,8 +521,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel/:channel_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -539,8 +539,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel/:channel_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -562,8 +562,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel/:channel_id/message",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -586,8 +586,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel/:channel_id/message",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -610,8 +610,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message/:message_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel/:channel_id/message/:message_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message", ":message_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -629,8 +629,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/channel/:channel_id/message/:message_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/channel/:channel_id/message/:message_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "channel", ":channel_id", "message", ":message_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -653,8 +653,8 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/dm/:other_member_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/dm/:other_member_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "dm", ":other_member_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -677,8 +677,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/dm/:other_member_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/dm/:other_member_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "dm", ":other_member_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
@@ -701,8 +701,8 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": {
-              "raw": "{{base_url}}/api/workspace/:workspace_id/dm/:other_member_id/message/:message_id",
-              "host": ["{{base_url}}"],
+              "raw": "{{API_GREENSLACK_URL}}/api/workspace/:workspace_id/dm/:other_member_id/message/:message_id",
+              "host": ["{{API_GREENSLACK_URL}}"],
               "path": ["api", "workspace", ":workspace_id", "dm", ":other_member_id", "message", ":message_id"],
               "variable": [
                 { "key": "workspace_id", "value": "" },
