@@ -13,7 +13,7 @@ const workspaceRouter = Router();
 workspaceRouter.use(authMiddleware);
 
 workspaceRouter.get('/', WorkspaceController.getWorkspaces);
-workspaceRouter.post('/', validateBody(['title', 'description']), WorkspaceController.create);
+workspaceRouter.post('/', validateBody(['title']), WorkspaceController.create);
 
 workspaceRouter.get('/:workspace_id/workspaceDetail',
     verifyMemberWorkspaceRoleMiddleware([]),

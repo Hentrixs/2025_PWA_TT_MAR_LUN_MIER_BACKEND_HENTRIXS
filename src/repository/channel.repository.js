@@ -3,8 +3,8 @@ import ServerError from "../helpers/error.helper.js";
 
 class channelRepository {
     async create(fk_id_workspace, name, description) {
-        if (!fk_id_workspace || !name || !description) {
-            throw new ServerError("Faltan datos obligatorios para crear el canal (workspace, name o description)", 400);
+        if (!fk_id_workspace || !name) {
+            throw new ServerError("Faltan datos obligatorios para crear el canal (workspace o name)", 400);
         }
         return await Channel.create({
             fk_id_workspace: fk_id_workspace,

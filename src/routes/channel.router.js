@@ -13,7 +13,7 @@ const channelRouter = Router({ mergeParams: true });
 channelRouter.post('/',
     verifyWorkspaceMiddleware,
     verifyMemberWorkspaceRoleMiddleware(["owner", "admin"]),
-    validateBody(['name', 'description']),
+    validateBody(['name']),
     ChannelController.createChannel
 );
 

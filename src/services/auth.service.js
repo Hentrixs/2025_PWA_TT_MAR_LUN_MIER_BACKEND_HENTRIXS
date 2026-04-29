@@ -6,6 +6,7 @@ import userRepository from "../repository/user.repository.js";
 import bcrypt from 'bcrypt';
 import userDTO from '../dto/user.dto.js';
 import workspaceMemberRepository from '../repository/member.repository.js';
+import { getVerificationEmailTemplate, getResetPasswordEmailTemplate, getEmailChangeEmailTemplate } from '../helpers/emailTemplates.helper.js';
 
 
 
@@ -35,14 +36,8 @@ class AuthService {
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: email,
-            subject: `Bienvenido ${name}, verifica tu correo electronico`,
-            html: `
-            <h1>Verifica tu correo electrónico</h1>
-            <p>Tu cuenta ha sido creada con éxito. Para comenzar a usar Slack Clone, por favor verifica tu dirección de correo electrónico haciendo clic en el siguiente enlace:</p>
-            <a href="${ENVIRONMENT.URL_FRONTEND}verify-email?verify_email_token=${verifyEmailToken}">Click aqui para verificar tu correo</a>
-            <br>
-            <span>Si no reconoces este registro desestima este mail.</span>
-            `
+            subject: `Bienvenido ${name}, verifica tu correo electrónico`,
+            html: getVerificationEmailTemplate(name, `${ENVIRONMENT.URL_FRONTEND}verify-email?verify_email_token=${verifyEmailToken}`)
         })
     };
 
@@ -125,11 +120,8 @@ class AuthService {
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: email,
-            subject: 'Restablecer Password',
-            html: `
-            <h1>Bienvenido, por favor confirma el restablecimiento de tu contraseña</h1>
-            <a href="${ENVIRONMENT.URL_BACKEND}api/auth/reset-password/${auth_token}">Click aqui para confirmar</a>
-            `,
+            subject: 'Restablecer Contraseña - GreenSlack',
+            html: getResetPasswordEmailTemplate(`${ENVIRONMENT.URL_BACKEND}api/auth/reset-password/${auth_token}`),
         });
         return;
     };
@@ -236,13 +228,8 @@ class AuthService {
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: new_email,
-            subject: 'Confirma tu nuevo correo electrónico',
-            html: `
-            <h1>Cambio de correo electrónico</h1>
-            <p>Has solicitado cambiar tu correo electrónico. Haz clic en el enlace de abajo para confirmar que esta dirección te pertenece:</p>
-            <a href="${ENVIRONMENT.URL_BACKEND}api/auth/confirm-email-change/${emailChangeToken}">Confirmar cambio de email</a>
-            <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
-            `
+            subject: 'Confirma tu nuevo correo electrónico - GreenSlack',
+            html: getEmailChangeEmailTemplate(`${ENVIRONMENT.URL_BACKEND}api/auth/confirm-email-change/${emailChangeToken}`)
         });
     };
 

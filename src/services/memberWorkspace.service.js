@@ -4,6 +4,7 @@ import ServerError from "../helpers/error.helper.js";
 import jwt from 'jsonwebtoken';
 import ENVIRONMENT from "../config/environment.config.js";
 import mailerTransporter from "../config/mailer.config.js";
+import { getInvitationEmailTemplate } from "../helpers/emailTemplates.helper.js";
 
 class MemberWorkspaceService {
     async getWorkspaces(user_id) {
@@ -73,11 +74,7 @@ class MemberWorkspaceService {
             from: ENVIRONMENT.MAIL_USER,
             to: invited_email,
             subject: `${invitedUser.name}, has recibido una invitación a GreenSlack`,
-            html: `
-                <h1>Te han invitado a un espacio de trabajo en GreenSlack</h1>
-                <p>Elige qué hacer con tu invitación:</p>
-                <a href="${accept_link}">Aceptar</a> &nbsp; <a href="${reject_link}">Rechazar</a>
-            `
+            html: getInvitationEmailTemplate(invitedUser.name, accept_link, reject_link)
         });
 
         return newMember;
