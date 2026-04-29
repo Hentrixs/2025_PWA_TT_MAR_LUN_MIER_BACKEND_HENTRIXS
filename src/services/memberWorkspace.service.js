@@ -49,10 +49,8 @@ class MemberWorkspaceService {
             throw new ServerError('Esta cuenta ya forma parte del espacio de trabajo.', 400);
         }
 
-        // Creamos al miembro en estado 'pending' (por default)
         const newMember = await workspaceMemberRepository.create(workspace_id, invitedUser._id, role);
 
-        // 1. Fabricamos dos tokens. Al token no le pasamos todo el Member, solo los datos clave y la accion.
         const accept_token = jwt.sign(
             { email: invited_email, workspace_id, action: 'accepted' },
             ENVIRONMENT.JWT_SECRET_KEY,
@@ -65,11 +63,9 @@ class MemberWorkspaceService {
             { expiresIn: '7d' }
         );
 
-        // 2. Armamos los links mágicos al backend directamente en la ruta publica
         const accept_link = `${ENVIRONMENT.URL_BACKEND}api/invitation/respond?token=${accept_token}`;
         const reject_link = `${ENVIRONMENT.URL_BACKEND}api/invitation/respond?token=${reject_token}`;
 
-        // 3. (OPCIONAL POR AHORA) Mandamos el correo. Como todavía no configuramos Nodemailer, lo comentamos e imprimimos por consola.
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: invited_email,
@@ -84,21 +80,17 @@ class MemberWorkspaceService {
         if (!token) throw new ServerError('Token no proporcionado', 400);
 
         try {
-            // 1. Desencriptamos el token y sacamos las 3 variables que le metimos antes
             const payload = jwt.verify(token, ENVIRONMENT.JWT_SECRET_KEY);
             const { email, workspace_id, action } = payload;
 
-            // 2. Buscamos al usuario real 
             const user = await userRepository.getByEmail(email);
             if (!user) throw new ServerError('Cuenta no localizada.', 404);
 
-            // 3. Buscamos la membresia
             const membership = await workspaceMemberRepository.getByWorkspaceAndUserId(workspace_id, user._id);
             if (!membership) throw new ServerError('Invitación no encontrada', 404);
 
             if (membership.acceptInvitation !== 'pending') throw new ServerError('Esta invitación ya ha sido procesada.', 400);
 
-            // 4. Actualizamos y le mandamos el 'action' (que va a decir 'accepted' o 'rejected' dependiendo qué botón tocó)
             const updatedMembership = await workspaceMemberRepository.updateInvitationStatus(membership._id, action);
             return updatedMembership;
 

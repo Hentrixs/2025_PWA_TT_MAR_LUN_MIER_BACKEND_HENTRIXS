@@ -5,23 +5,17 @@ import ServerError from '../helpers/error.helper.js';
 const authMiddleware = (req, res, next) => {
     try {
 
-        const auth_header = req.headers.authorization; // el token se envia en headers de authorization normalmente.
+        const auth_header = req.headers.authorization;
         if (!auth_header) {
             throw new ServerError('Token invalido', 401);
         }
-        const auth_token = auth_header.split(' ')[1]; // esto saca el Bearer y nos devuelve en token puro
+        const auth_token = auth_header.split(' ')[1];
         if (!auth_token) {
             throw new ServerError('Token invalido', 401);
         }
 
-        const payload = jwt.verify(auth_token, ENVIRONMENT.JWT_SECRET_KEY); // se verifica y extrae el payload
-
-        // req es un obj y le podes agregar o cambiar cosas 
+        const payload = jwt.verify(auth_token, ENVIRONMENT.JWT_SECRET_KEY);
         req.user = payload;
-
-        // claro, a mi no me interesa la informacion del request, 
-        // pero se la tenemos que pasar a los controladores que si le importan
-
         next();
     } catch (err) {
         if (err instanceof ServerError) {

@@ -3,9 +3,6 @@ import verifyMemberWorkspaceRoleMiddleware from '../middlewares/verifyMemberWork
 import ChannelController from '../controllers/channel.controller.js';
 
 const channelMessagesRouter = Router({ mergeParams: true });
-
-// Note: authMiddleware / verifyWorkspaceMiddleware / verifyChannelMiddleware are handled by the parent router
-
 channelMessagesRouter.get('/', ChannelController.getChannelMessagesHistory);
 channelMessagesRouter.post('/', ChannelController.createChannelMessage);
 

@@ -1,6 +1,48 @@
-# GreenSlack — Backend API
+# GreenSlack — API
+
+# !!! Porfavor leer con atencion.
+
+# Descripcion del Proyecto
 
 API REST de una aplicación de mensajería colaborativa estilo Slack. Permite crear workspaces, organizarlos en canales y comunicarse mediante mensajes de canal o mensajes directos entre miembros.
+
+## Caracteristicas del Proyecto
+- **Web App Full-Stack**: Frontend desarrollado en React (Vite) + Typescript, y Backend en Node.js + Express.
+- **Arquitectura en Capas**: Estricta separación de responsabilidades en `routes → controllers → services → repository` + `models` y `middlewares`.
+- **Autenticación Segura**: Implementación de Hashing con Bcrypt, JSON Web Tokens (JWT) con expiración, y confirmación obligatoria de cuentas por Email.
+- **Base de Datos Relacional (NoSQL)**: Uso de MongoDB + Mongoose con relaciones complejas y `.populate()` (Workspaces -> Channels -> Messages -> Members).
+- **CRUD Completo**: La entidad principal (Workspace) y las entidades relacionadas (Canales, Mensajes, Miembros) poseen operaciones completas de Crear, Leer, Actualizar y Eliminar.
+- **Middlewares**: Se incluyen Middlewares para CORS, validación de esquemas (Inputs), manejo centralizado de errores (`errorHandler`) y verificación JWT.
+- **Manejo de Variables de Entorno**: Uso seguro de `.env` en Frontend y Backend.
+- **Envío de Correos**: Integración robusta con `Nodemailer` para registro, recuperación de contraseña e invitaciones.
+- **UI Responsiva**: Interfaz adaptativa probada desde pantallas móviles pequeñas (320px) hasta monitores UltraWide (2000px+).
+
+## Características Adicionales (Bonus) 🚀
+Se ha ido mucho más allá de los requisitos básicos, implementando lógicas avanzadas propias de una aplicación SaaS real:
+- **Mensajería Directa (DM)**: Chat privado 1 a 1 entre miembros del espacio de trabajo.
+- **Control de Acceso Basado en Roles (RBAC)**: Diferenciación de permisos internos en cada Workspace (`Owner`, `Admin`, `Member`). Por ejemplo, solo el Owner puede borrar el Workspace, y solo los Admins pueden invitar.
+- **Invitaciones por Magic Links**: Sistema para invitar a nuevos usuarios al workspace enviando un link único al correo, el cual permite Aceptar/Rechazar al instante.
+- **Tematización Dinámica**: Soporte completo de Modo Oscuro / Modo Claro gestionado mediante React Context y CSS Variables nativas.
+- **Cambio de Email Seguro**: Flujo de seguridad estricto que requiere la contraseña actual y confirmación al nuevo correo para cambiar el email del perfil.
+- **Borrado en Cascada (Cascade Delete)**: Al eliminar una cuenta de usuario o un workspace, un script interno se encarga de purgar todas las referencias, mensajes y canales asociados para no dejar bases de datos huérfanas.
+- **Simulación Real-Time**: Polling integrado en el chat para sincronizar mensajes en tiempo real, adaptado a las limitaciones "Serverless" del despliegue en Vercel.
+- **Modal Navigation Móvil**: Sistema de navegación bottom-sheet profesional en dispositivos móviles.
+
+## Autenticación
+- Las rutas protegidas requieren un **Bearer Token** en el header
+- El token se obtiene al hacer login.
+
+## Verificacion
+- Existe verificacion del tipo de datos en ambos lados: 
+  - desde el frontend antes de realizar consulta a la API  
+  - desde la API al recibir la consulta
+
+
+## Cuenta de Prueba
+Password: IcmC7ZbR7DpaBUXCOKntkDW
+Email: slackgreenslack@gmail.com
+
+## URLS:
 
 URL Deploy Frontend = https://greenslack.vercel.app/
 URL Deploy Backend = https://2025-pwa-tt-mar-lun-mier-backend-he.vercel.app/
@@ -11,7 +53,6 @@ URL Repo Backend = https://github.com/Hentrixs/2025_PWA_TT_MAR_LUN_MIER_BACKEND_
 ## Instrucciones para el Postman
 El archivo `GreenSlack.postman_collection.json` contiene los endpoints junto con la URL de la API predefinida. 
 Solo hay que importarlo en Postman, generar un token desde el endpoint 'Login' (en la carpeta Auth) y pegarlo en la variable `token` de la colección para autorizar las demás solicitudes.
-
 
 ## Tecnologias Usadas
 - Javascript [Backend]
@@ -36,14 +77,8 @@ Solo hay que importarlo en Postman, generar un token desde el endpoint 'Login' (
   - Redaccion de Documentacion
   - Todos los procesos realizados por la IA son procesos que el usuario automatizo para agilizar tiempo porque son tediosos 
 
-## Autenticación
-- Las rutas protegidas requieren un **Bearer Token** en el header
-- El token se obtiene al hacer login.
+---
 
-## Verificacion
-- Existe verificacion del tipo de datos en ambos lados: 
-  - desde el frontend antes de realizar consulta a la API  
-  - desde la API al recibir la consulta
 
 ## Roles
 

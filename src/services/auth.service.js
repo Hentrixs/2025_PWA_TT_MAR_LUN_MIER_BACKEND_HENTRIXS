@@ -90,7 +90,6 @@ class AuthService {
             throw new ServerError('Credenciales inválidas. Verifica tu correo y contraseña.', 401);
         }
 
-        // NUNCA guardamos el password en el token! Y agregamos id, name y created_at
         const auth_token = jwt.sign(
             {
                 email: user.email,
@@ -131,7 +130,6 @@ class AuthService {
             throw new ServerError('Token no proporcionado.', 400);
         }
         try {
-            // jwt.verify abre el token y se asegura de que haya sido firmado con TU LLAVE SECRETA, no con la nueva contraseña!
             const payload = jwt.verify(reset_token, ENVIRONMENT.JWT_SECRET_KEY);
             const user = await userRepository.getByEmail(payload.email);
 
@@ -189,13 +187,11 @@ class AuthService {
         const user = await userRepository.getById(user_id);
         if (!user) throw new ServerError('Usuario no encontrado.', 404);
 
-        // Verificar contraseña antigua
         const isMatch = await bcrypt.compare(old_password, user.password);
         if (!isMatch) {
             throw new ServerError('La contraseña actual es incorrecta.', 401);
         }
 
-        // Hashear nueva contraseña
         const hashedPassword = await bcrypt.hash(new_password, 12);
 
         await userRepository.updatePassword(user_id, hashedPassword);
@@ -209,22 +205,18 @@ class AuthService {
         const user = await userRepository.getById(user_id);
         if (!user) throw new ServerError('Usuario no encontrado.', 404);
 
-        // Validar contraseña actual
         const is_same_password = await bcrypt.compare(password, user.password);
         if (!is_same_password) throw new ServerError('La contraseña actual es incorrecta.', 401);
 
-        // Validar que el nuevo email no esté en uso
         const existingUser = await userRepository.getByEmail(new_email);
         if (existingUser) throw new ServerError('Este correo electrónico ya está registrado por otro usuario.', 400);
 
-        // Generar token de cambio de email (expira en 1 hora por seguridad)
         const emailChangeToken = jwt.sign(
             { user_id, new_email },
             ENVIRONMENT.JWT_SECRET_KEY,
             { expiresIn: '1h' }
         );
 
-        // Enviar mail
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: new_email,
@@ -242,7 +234,6 @@ class AuthService {
             const user = await userRepository.getById(user_id);
             if (!user) throw new ServerError('Usuario no encontrado.', 404);
 
-            // Actualizar email
             await userRepository.updateById(user_id, { email: new_email, email_verified: true });
 
         } catch (err) {

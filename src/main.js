@@ -16,7 +16,7 @@ const app = express();
 export default app;
 
 const blockedOrgins = [
-    '' // Dejada vacia la blacklist porque por ahora no hay nadie a quien quiera blockear 
+    ''
 ];
 
 app.use(

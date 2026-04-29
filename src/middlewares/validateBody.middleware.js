@@ -13,7 +13,7 @@ const validateBody = (requiredFields) => (req,res,next) => {
     next();
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // que es esto wtf.
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const validateEmail = (field = 'email') => (req,res,next) => {
     const value = req.body[field];

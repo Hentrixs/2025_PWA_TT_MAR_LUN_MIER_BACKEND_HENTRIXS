@@ -8,8 +8,6 @@ import validateBody from '../middlewares/validateBody.middleware.js';
 
 const channelRouter = Router({ mergeParams: true });
 
-// este channelRouter esta encastrado al workspace router el cual ya tiene el authMiddleware, no hace falta meterlo aca.
-
 channelRouter.post('/',
     verifyWorkspaceMiddleware,
     verifyMemberWorkspaceRoleMiddleware(["owner", "admin"]),
