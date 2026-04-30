@@ -15,7 +15,7 @@ const workspaceSchema = new mongoose.Schema({
         default: Date.now,
     },
     active: {
-        type: Boolean, /* Aca no se porque le paso los parametros en string y que el repo los convierta a boolean y no en boolean directamente, despues mas tarde revisare esto, igual es terciario*/
+        type: Boolean,
         required: true,
         default: true,
     },

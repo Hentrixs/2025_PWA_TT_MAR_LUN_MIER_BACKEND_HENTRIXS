@@ -1,35 +1,46 @@
-import { error } from "console"
 import ServerError from "../helpers/error.helper.js";
-const errorHandlerMiddleware = (error, req, res, next) => {
+import { getRequestLanguage } from "../helpers/lang.helper.js";
+import { TRANSLATIONS } from "../constants/translations.js";
 
-    if (error instanceof ServerError) {
-        return res.status(error.status).json({
+const errorHandlerMiddleware = (err, req, res, next) => {
+
+    const lang = getRequestLanguage(req);
+
+    const translate = (message) => {
+        if (TRANSLATIONS[message]) {
+            return TRANSLATIONS[message][lang] || TRANSLATIONS[message].es;
+        }
+        return message;
+    };
+
+    if (err instanceof ServerError) {
+        return res.status(err.status).json({
             ok: false,
-            status: error.status,
-            message: error.message
+            status: err.status,
+            message: translate(err.message)
         });
     };
 
-    if (error.name === 'JsonWebTokenError') {
+    if (err.name === 'JsonWebTokenError') {
         return res.status(401).json({
             ok: false,
             status: 401,
-            message: 'TokenInvalido'
+            message: translate('TokenInvalido')
         });
     };
 
-    if (error.name === 'TokenExpiredError') {
+    if (err.name === 'TokenExpiredError') {
         return res.status(401).json({
             ok: false,
-            status: error.status,
-            message: error.message
+            status: 401,
+            message: translate('El enlace ha expirado. Por favor, solicita uno nuevo.')
         });
     };
 
     res.status(500).json({
         ok: false,
         status: 500,
-        message: 'Ha ocurrido un error inesperado'
+        message: translate('Ha ocurrido un error inesperado')
     });
 };
 

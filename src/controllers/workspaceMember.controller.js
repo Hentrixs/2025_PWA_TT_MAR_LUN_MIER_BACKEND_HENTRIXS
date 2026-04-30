@@ -1,17 +1,20 @@
 import memberWorkspaceService from '../services/memberWorkspace.service.js';
 import ServerError from '../helpers/error.helper.js';
 import ENVIRONMENT from '../config/environment.config.js';
+import { getRequestLanguage } from '../helpers/lang.helper.js';
+import { translate } from '../helpers/translation.helper.js';
 
 class workspaceMemberController {
 
     async getMemberList(req, res, next) {
         try {
             const { workspace_id } = req.params;
+            const lang = getRequestLanguage(req);
             const members = await memberWorkspaceService.getMemberList(workspace_id);
             res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Lista de miembros obtenida correctamente',
+                message: translate('Lista de miembros obtenida correctamente', lang),
                 data: { members }
             });
         } catch (err) {
@@ -23,6 +26,7 @@ class workspaceMemberController {
         try {
             const { member_id } = req.params;
             const requesting_member = req.member;
+            const lang = getRequestLanguage(req);
 
             if (requesting_member._id.toString() === member_id) {
                 throw new ServerError('No puedes eliminarte a ti mismo del workspace.', 400);
@@ -32,7 +36,7 @@ class workspaceMemberController {
             res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Miembro eliminado correctamente'
+                message: translate('Miembro eliminado correctamente', lang)
             });
         } catch (err) {
             next(err);
@@ -44,6 +48,7 @@ class workspaceMemberController {
             const { member_id } = req.params;
             const { role } = req.body;
             const requesting_member = req.member;
+            const lang = getRequestLanguage(req);
 
             if (requesting_member._id.toString() === member_id && role === 'member') {
                 throw new ServerError('No puedes degradar tu propio rol a member.', 400);
@@ -53,7 +58,7 @@ class workspaceMemberController {
             res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Rol de miembro actualizado',
+                message: translate('Rol de miembro actualizado', lang),
                 data: { member: updatedMember }
             });
         } catch (err) {
@@ -65,11 +70,12 @@ class workspaceMemberController {
         try {
             const { workspace_id } = req.params;
             const { email, role } = req.body;
-            await memberWorkspaceService.inviteMember(workspace_id, email, role);
+            const lang = getRequestLanguage(req);
+            await memberWorkspaceService.inviteMember(workspace_id, email, role, lang);
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Invitacion Enviada'
+                message: translate('Invitacion Enviada', lang)
             });
         } catch (err) {
             next(err);

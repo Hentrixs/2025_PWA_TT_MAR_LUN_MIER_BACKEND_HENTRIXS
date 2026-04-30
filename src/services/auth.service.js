@@ -6,12 +6,12 @@ import userRepository from "../repository/user.repository.js";
 import bcrypt from 'bcrypt';
 import userDTO from '../dto/user.dto.js';
 import workspaceMemberRepository from '../repository/member.repository.js';
-import { getVerificationEmailTemplate, getResetPasswordEmailTemplate, getEmailChangeEmailTemplate } from '../helpers/emailTemplates.helper.js';
+import { getVerificationEmailTemplate, getResetPasswordEmailTemplate, getEmailChangeEmailTemplate, getEmailSubject } from '../helpers/emailTemplates.helper.js';
 
 
 
 class AuthService {
-    async register({ name, email, password }) {
+    async register({ name, email, password, lang = 'es' }) {
         if (!name || !email || !password) {
             throw new ServerError('Todos los campos son obligatorios: nombre, email y contraseña.', 400);
         };
@@ -27,17 +27,17 @@ class AuthService {
         };
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        await userRepository.create(name, email, hashedPassword);
-        await this.sendVerifyEmail({ email, name });
+        await userRepository.create(name, email, hashedPassword, lang);
+        await this.sendVerifyEmail({ email, name, lang });
     };
 
-    async sendVerifyEmail({ email, name }) {
+    async sendVerifyEmail({ email, name, lang = 'es' }) {
         const verifyEmailToken = jwt.sign({ email: email, name: name }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: '5d' });
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: email,
-            subject: `Bienvenido ${name}, verifica tu correo electrónico`,
-            html: getVerificationEmailTemplate(name, `${ENVIRONMENT.URL_FRONTEND}verify-email?verify_email_token=${verifyEmailToken}`)
+            subject: getEmailSubject(lang, 'verification', { name }),
+            html: getVerificationEmailTemplate(name, `${ENVIRONMENT.URL_FRONTEND}verify-email?verify_email_token=${verifyEmailToken}`, lang)
         })
     };
 
@@ -100,10 +100,10 @@ class AuthService {
             ENVIRONMENT.JWT_SECRET_KEY,
             { expiresIn: "30d" }
         );
-        return auth_token;
+        return { auth_token, user_language: user.language };
     };
 
-    async resetPasswordRequest({ email, new_password }) {
+    async resetPasswordRequest({ email, new_password, lang = 'es' }) {
         if (!email || !new_password) {
             throw new ServerError('Email y nueva contraseña son obligatorios.', 400)
         };
@@ -119,8 +119,8 @@ class AuthService {
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: email,
-            subject: 'Restablecer Contraseña - GreenSlack',
-            html: getResetPasswordEmailTemplate(`${ENVIRONMENT.URL_BACKEND}api/auth/reset-password/${auth_token}`),
+            subject: getEmailSubject(lang, 'reset_password'),
+            html: getResetPasswordEmailTemplate(`${ENVIRONMENT.URL_BACKEND}api/auth/reset-password/${auth_token}`, lang),
         });
         return;
     };
@@ -197,7 +197,7 @@ class AuthService {
         await userRepository.updatePassword(user_id, hashedPassword);
     };
 
-    async requestEmailChange({ user_id, password, new_email }) {
+    async requestEmailChange({ user_id, password, new_email, lang = 'es' }) {
         if (!password || !new_email) {
             throw new ServerError('Faltan datos técnicos (contraseña o email).', 400);
         }
@@ -220,8 +220,8 @@ class AuthService {
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: new_email,
-            subject: 'Confirma tu nuevo correo electrónico - GreenSlack',
-            html: getEmailChangeEmailTemplate(`${ENVIRONMENT.URL_BACKEND}api/auth/confirm-email-change/${emailChangeToken}`)
+            subject: getEmailSubject(lang, 'email_change'),
+            html: getEmailChangeEmailTemplate(`${ENVIRONMENT.URL_BACKEND}api/auth/confirm-email-change/${emailChangeToken}`, lang)
         });
     };
 
@@ -245,6 +245,13 @@ class AuthService {
                 throw err;
             }
         }
+    };
+
+    async updateLanguage({ user_id, language }) {
+        if (!['es', 'en'].includes(language)) {
+            throw new ServerError('Idioma no soportado.', 400);
+        }
+        await userRepository.updateById(user_id, { language });
     };
 
 };

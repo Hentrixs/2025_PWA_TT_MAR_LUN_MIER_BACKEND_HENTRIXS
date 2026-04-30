@@ -68,4 +68,10 @@ authRouter.get('/confirm-email-change/:token',
     authController.confirmEmailChange
 );
 
-export default authRouter
+authRouter.patch('/update-language',
+    authMiddleware,
+    validateBody(['language']),
+    authController.updateLanguage
+);
+
+export default authRouter;

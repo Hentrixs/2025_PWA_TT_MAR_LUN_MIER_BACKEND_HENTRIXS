@@ -3,14 +3,15 @@ import User from "../models/user.model.js"
 
 class UserRepository {
 
-    async create(username, email, password) {
+    async create(username, email, password, language = 'es') {
         if (!username || !email || !password) {
             throw new ServerError('Faltan credenciales', 400);
         };
         return await User.create({
             name: username,
             email: email,
-            password: password
+            password: password,
+            language: language
         })
     }
 

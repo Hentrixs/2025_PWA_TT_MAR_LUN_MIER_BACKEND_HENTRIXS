@@ -2,6 +2,7 @@ import ENVIRONMENT from "./config/environment.config.js";
 import cors from 'cors';
 import errorHandlerMiddleware from "./middlewares/errorHandler.middleware.js";
 import connectMongoDB from "./config/mongoDB.config.js";
+import ServerError from "./helpers/error.helper.js";
 
 import express from 'express';
 

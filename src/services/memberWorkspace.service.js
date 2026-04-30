@@ -4,7 +4,7 @@ import ServerError from "../helpers/error.helper.js";
 import jwt from 'jsonwebtoken';
 import ENVIRONMENT from "../config/environment.config.js";
 import mailerTransporter from "../config/mailer.config.js";
-import { getInvitationEmailTemplate } from "../helpers/emailTemplates.helper.js";
+import { getInvitationEmailTemplate, getEmailSubject } from "../helpers/emailTemplates.helper.js";
 
 class MemberWorkspaceService {
     async getWorkspaces(user_id) {
@@ -32,7 +32,7 @@ class MemberWorkspaceService {
         return await workspaceMemberRepository.updateRoleById(member_id, role);
     };
 
-    async inviteMember(workspace_id, invited_email, role) {
+    async inviteMember(workspace_id, invited_email, role, lang = 'es') {
         if (!workspace_id || !invited_email || !role) {
             throw new ServerError('Todos los campos son obligatorios', 400);
         }
@@ -69,8 +69,8 @@ class MemberWorkspaceService {
         await mailerTransporter.sendMail({
             from: ENVIRONMENT.MAIL_USER,
             to: invited_email,
-            subject: `${invitedUser.name}, has recibido una invitación a GreenSlack`,
-            html: getInvitationEmailTemplate(invitedUser.name, accept_link, reject_link)
+            subject: getEmailSubject(lang, 'invitation', { name: invitedUser.name }),
+            html: getInvitationEmailTemplate(invitedUser.name, accept_link, reject_link, lang)
         });
 
         return newMember;

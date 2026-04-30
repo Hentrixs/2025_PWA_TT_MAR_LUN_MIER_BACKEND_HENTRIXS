@@ -6,6 +6,7 @@ class userDTO {
         this.user_email = user.email;
         this.user_email_verified = user.email_verified;
         this.user_description = user.description;
+        this.user_language = user.language;
     };
 
 };

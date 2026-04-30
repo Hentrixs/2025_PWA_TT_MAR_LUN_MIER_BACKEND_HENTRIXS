@@ -3,6 +3,8 @@ import ServerError from '../helpers/error.helper.js';
 import ChannelDTO from '../dto/channel.dto.js';
 import ChannelMessagesRepository from '../repository/channelMessages.repository.js';
 import MessageDTO from '../dto/message.dto.js';
+import { getRequestLanguage } from '../helpers/lang.helper.js';
+import { translate } from '../helpers/translation.helper.js';
 
 class channelController {
 
@@ -10,11 +12,12 @@ class channelController {
         try {
             const { name, description } = req.body;
             const { workspace_id: fk_id_workspace } = req.params;
+            const lang = getRequestLanguage(req);
             await ChannelRepository.create(fk_id_workspace, name, description);
             res.status(201).json({
                 ok: true,
                 status: 201,
-                message: 'Canal creado exitosamente.'
+                message: translate('Canal creado exitosamente.', lang)
             });
         } catch (err) {
             next(err);
@@ -23,12 +26,13 @@ class channelController {
 
     async getAll(_req, res, next) {
         try {
+            const lang = getRequestLanguage(_req);
             const channels_raw = await ChannelRepository.getAll();
             const channels = channels_raw.map(channel => new ChannelDTO(channel));
             res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Canales encontrados',
+                message: translate('Canales encontrados', lang),
                 data: { channels }
             });
         } catch (err) {
@@ -39,12 +43,13 @@ class channelController {
     async getChannelByWorkspaceId(req, res, next) {
         try {
             const { workspace_id: fk_id_workspace } = req.params;
+            const lang = getRequestLanguage(req);
             const channel_list_raw = await ChannelRepository.getChannelByWorkspaceId(fk_id_workspace);
             const channel_list = channel_list_raw.map(channel => new ChannelDTO(channel));
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Canales traidos exitosamente.',
+                message: translate('Canales traidos exitosamente.', lang),
                 data: { channel_list }
             });
         } catch (err) {
@@ -55,12 +60,13 @@ class channelController {
     async deleteChannelById(req, res, next) {
         try {
             const { channel_id } = req.params;
+            const lang = getRequestLanguage(req);
             await ChannelMessagesRepository.deleteMessagesByChannelId(channel_id);
             await ChannelRepository.deleteChannelById(channel_id);
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Canal eliminado correctamente.'
+                message: translate('Canal eliminado correctamente.', lang)
             });
         } catch (err) {
             next(err);
@@ -72,6 +78,7 @@ class channelController {
             const { message_id } = req.params;
             const { content } = req.body;
             const { _id: member_id } = req.member;
+            const lang = getRequestLanguage(req);
 
             if (!content) throw new ServerError('El contenido no puede estar vacío', 400);
 
@@ -84,7 +91,7 @@ class channelController {
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Mensaje actualizado.',
+                message: translate('Mensaje actualizado.', lang),
                 data: { message: updated_message }
             });
         } catch (err) {
@@ -96,6 +103,7 @@ class channelController {
         try {
             const { message_id } = req.params;
             const { _id: member_id } = req.member;
+            const lang = getRequestLanguage(req);
 
             const message = await ChannelMessagesRepository.getMessageById(message_id);
             if (message.fk_id_member.toString() !== member_id.toString()) {
@@ -106,7 +114,7 @@ class channelController {
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Mensaje eliminado.'
+                message: translate('Mensaje eliminado.', lang)
             });
         } catch (err) {
             next(err);
@@ -117,6 +125,7 @@ class channelController {
         try {
             const { channel_id } = req.params;
             const { fk_id_member, content } = req.body;
+            const lang = getRequestLanguage(req);
 
             if (!channel_id || !fk_id_member || !content) {
                 throw new ServerError('Faltan Credenciales', 400);
@@ -126,7 +135,7 @@ class channelController {
             res.status(201).json({
                 ok: true,
                 status: 201,
-                message: 'Mensaje Creado',
+                message: translate('Mensaje Creado', lang),
             });
         } catch (err) {
             next(err);
@@ -136,12 +145,13 @@ class channelController {
     async getChannelMessagesHistory(req, res, next) {
         try {
             const { channel_id } = req.params;
+            const lang = getRequestLanguage(req);
             const channelMessagesHistory_raw = await ChannelMessagesRepository.getChannelMessagesHistory(channel_id);
             const channelMessagesHistory = channelMessagesHistory_raw.map(msg => new MessageDTO(msg));
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                messages: 'Historial de Mensajes Obtenido',
+                message: translate('Historial de Mensajes Obtenido', lang),
                 data: { channelMessagesHistory }
             });
         } catch (err) {
@@ -153,11 +163,12 @@ class channelController {
         try {
             const { _id: channel_id } = req.channel;
             const { name, description } = req.body;
+            const lang = getRequestLanguage(req);
             const updated_channel = await ChannelRepository.updateChannelById(channel_id, name, description);
             res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Canal actualizado correctamente.',
+                message: translate('Canal actualizado correctamente.', lang),
                 data: { channel: updated_channel }
             });
         } catch (err) {
